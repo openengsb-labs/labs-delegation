@@ -51,6 +51,7 @@
             <Bundle-SymbolicName>${bundle.symbolicname}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Bundle-Activator>org.openengsb.labs.delegation.test.internal.Activator</Bundle-Activator>
+            <Provided-Classes>*</Provided-Classes>
           </instructions>
         </configuration>
       </plugin>
@@ -61,6 +62,11 @@
     <dependency>
       <groupId>org.openengsb.labs.delegation</groupId>
       <artifactId>delegation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.openengsb.labs.delegation</groupId>
+      <artifactId>delegation-service</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>

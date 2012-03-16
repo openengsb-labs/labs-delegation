@@ -127,9 +127,10 @@ public class FilterTest {
         BundleContext bundle2Context = mock(BundleContext.class);
         when(bundle2.getBundleContext()).thenReturn(bundle2Context);
         when(bundle2.loadClass(Configuration.class.getName())).thenReturn(Configuration.class);
+        when(bundle2.getHeaders()).thenReturn(new Hashtable<String, Object>());
         installBundle(bundle2);
         ClassProvider provider = DelegationUtil.registerClassProviderForBundle(bundle2);
-        assertThat(provider.loadClass(Configuration.class.getName()), equalTo((Class) Configuration.class));
+        assertThat(provider.loadClass(Configuration.class.getName()), equalTo((Class) Configuration.class)); 
     }
 
     private void installBundle(Bundle bundle2) {

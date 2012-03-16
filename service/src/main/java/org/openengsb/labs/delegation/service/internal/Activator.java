@@ -2,10 +2,9 @@ package org.openengsb.labs.delegation.service.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
 
-import org.openengsb.labs.delegation.api.ClassProvider;
 import org.openengsb.labs.delegation.api.Constants;
+import org.openengsb.labs.delegation.service.DelegationUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -39,13 +38,11 @@ public class Activator implements BundleActivator {
     private synchronized void handleBundleInstall(Bundle b) {
         LOGGER.info("injecting ClassProvider-Service into bundle {}.", b.getSymbolicName());
         String providedClassesString = (String) b.getHeaders().get(Constants.PROVIDED_CLASSES);
-        ClassloadingDelegateImpl service;
         if (providedClassesString == null || providedClassesString.isEmpty()) {
             return;
         }
         Collection<String> providedClasses = parseProvidedClasses(providedClassesString);
-        service = new ClassloadingDelegateImpl(b, providedClasses);
-        b.getBundleContext().registerService(ClassProvider.class.getName(), service, new Hashtable<String, Object>());
+        DelegationUtil.registerClassProviderForBundle(b, providedClasses);
     }
 
     private Collection<String> parseProvidedClasses(String providedClassesString) {

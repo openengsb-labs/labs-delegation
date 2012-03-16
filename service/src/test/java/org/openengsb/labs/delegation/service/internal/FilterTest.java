@@ -25,6 +25,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.openengsb.labs.delegation.api.ClassProvider;
 import org.openengsb.labs.delegation.api.Constants;
+import org.openengsb.labs.delegation.service.DelegationUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -117,6 +118,18 @@ public class FilterTest {
         } catch (ClassNotFoundException e) {
             // expected
         }
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void injectServiceToForeignBundle_shouldProvideClasses() throws Exception {
+        Bundle bundle2 = mock(Bundle.class);
+        BundleContext bundle2Context = mock(BundleContext.class);
+        when(bundle2.getBundleContext()).thenReturn(bundle2Context);
+        when(bundle2.loadClass(Configuration.class.getName())).thenReturn(Configuration.class);
+        installBundle(bundle2);
+        ClassProvider provider = DelegationUtil.registerClassProviderForBundle(bundle2);
+        assertThat(provider.loadClass(Configuration.class.getName()), equalTo((Class) Configuration.class));
     }
 
     private void installBundle(Bundle bundle2) {

@@ -17,7 +17,8 @@
 package org.openengsb.labs.delegation.service.internal;
 
 import java.net.URL;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.openengsb.labs.delegation.api.ClassProvider;
 import org.osgi.framework.Bundle;
@@ -30,19 +31,26 @@ import org.slf4j.LoggerFactory;
 public class ClassloadingDelegateImpl implements ClassProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassloadingDelegateImpl.class);
+    private Collection<String> filters = new ArrayList<String>();
 
-    protected Map<String, Class<?>> supported;
+    protected Bundle bundle;
 
-    private Bundle bundle;
-
-    public ClassloadingDelegateImpl(Bundle bundle) {
+    public ClassloadingDelegateImpl(Bundle bundle, Collection<String> providedClasses) {
         this.bundle = bundle;
+        for (String s : providedClasses) {
+            filters.add(s.replaceAll("\\.", "\\.").replaceAll("\\*", ".*"));
+        }
     }
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
         LOGGER.debug("loading class {} by delegation", name);
-        return bundle.loadClass(name);
+        for (String filter : filters) {
+            if (name.matches(filter)) {
+                return bundle.loadClass(name);
+            }
+        }
+        throw new ClassNotFoundException("Could not find class " + name + " using service " + this);
     }
 
     @Override

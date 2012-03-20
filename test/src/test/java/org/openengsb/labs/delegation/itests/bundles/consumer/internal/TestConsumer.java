@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Hashtable;
+import java.util.concurrent.Callable;
 
 import org.openengsb.labs.delegation.service.ClassProvider;
 import org.openengsb.labs.delegation.service.DelegationUtil;
@@ -33,11 +34,16 @@ import org.slf4j.LoggerFactory;
 
 public class TestConsumer implements BundleActivator {
 
-    public static final class DummyInvocationHandler implements InvocationHandler {
+    public static class ResultTask implements Callable<Method> {
+        private Method result;
+
+        public ResultTask(Method result) {
+            this.result = result;
+        }
+
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            System.out.println(method);
-            return null;
+        public Method call() throws Exception {
+            return result;
         }
     }
 
@@ -65,9 +71,10 @@ public class TestConsumer implements BundleActivator {
                 LOGGER.info("cnfe", e);
                 continue;
             }
-            Object instance = Proxy.newProxyInstance(cls.getClassLoader(), new Class<?>[]{ cls },
-                new DummyInvocationHandler());
-            context.registerService(cls.getName(), instance, new Hashtable<String, Object>());
+            ResultTask resultTask = new ResultTask(cls.getMethod("doSomething"));
+            Hashtable<String, Object> properties = new Hashtable<String, Object>();
+            properties.put("resultProvider", "test");
+            context.registerService(Callable.class.getName(), resultTask, properties);
         }
     }
 

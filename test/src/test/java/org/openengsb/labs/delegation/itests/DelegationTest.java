@@ -17,15 +17,17 @@
 
 package org.openengsb.labs.delegation.itests;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.ops4j.pax.exam.CoreOptions.felix;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
 
-import java.util.Arrays;
+import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
@@ -68,7 +70,7 @@ public class DelegationTest {
         TinyBundle tinyBundle =
             bundle()
                 .add(TestConsumer.class, InnerClassStrategy.ALL)
-                .add(TestConsumer.DummyInvocationHandler.class, InnerClassStrategy.ALL)
+                .add(TestConsumer.ResultTask.class, InnerClassStrategy.ALL)
                 .set(Constants.BUNDLE_ACTIVATOR, TestConsumer.class.getName())
                 .set(Constants.BUNDLE_SYMBOLICNAME, "test.consumer")
                 .set(Constants.BUNDLE_VERSION, "1.0.0")
@@ -94,14 +96,12 @@ public class DelegationTest {
         providerBundle.start();
         consumerBundle.start();
 
-        ServiceReference[] registeredServices = consumerBundle.getRegisteredServices();
-        assertNotNull("bundle had no services", registeredServices);
-        for (ServiceReference ref : registeredServices) {
-            String[] interfaces = (String[]) ref.getProperty(Constants.OBJECTCLASS);
-            if (Arrays.asList(interfaces).contains(TestService.class.getName())) {
-                return;
-            }
-        }
-        fail("service not registerd");
+        ServiceReference reference = bundleContext.getServiceReference(Callable.class.getName()); // resultProvider=test
+        @SuppressWarnings("unchecked")
+        Callable<Method> resultTask = (Callable<Method>) bundleContext.getService(reference);
+        Method method = resultTask.call();
+
+        assertThat(method.getName(), is("doSomething"));
+        assertThat(method.getParameterTypes(), equalTo(new Class<?>[0]));
     }
 }

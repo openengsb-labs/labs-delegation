@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Hashtable;
 
-import org.openengsb.labs.delegation.api.ClassProvider;
+import org.openengsb.labs.delegation.service.ClassProvider;
 import org.openengsb.labs.delegation.service.DelegationUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;

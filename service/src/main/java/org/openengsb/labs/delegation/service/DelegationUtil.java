@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Hashtable;
 
-import org.openengsb.labs.delegation.api.ClassProvider;
 import org.openengsb.labs.delegation.service.internal.ClassloadingDelegateImpl;
 import org.osgi.framework.Bundle;
 

@@ -44,7 +44,6 @@
   </properties>
 
   <modules>
-    <module>api</module>
     <module>service</module>
     <module>test</module>
   </modules>
@@ -87,6 +86,7 @@
         <artifactId>delegation-api</artifactId>
         <version>${project.version}</version>
       </dependency>
+
       <!-- OSGi Dependencies -->
       <dependency>
         <groupId>org.osgi</groupId>
@@ -98,12 +98,14 @@
         <artifactId>org.osgi.compendium</artifactId>
         <version>${osgi.version}</version>
       </dependency>
+
       <!-- Logging API -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
+
       <!-- Test Frameworks -->
       <dependency>
         <groupId>junit</groupId>
@@ -111,7 +113,6 @@
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
-
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>

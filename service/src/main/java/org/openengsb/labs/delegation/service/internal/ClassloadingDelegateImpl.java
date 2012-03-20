@@ -20,7 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.openengsb.labs.delegation.api.ClassProvider;
+import org.openengsb.labs.delegation.service.ClassProvider;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

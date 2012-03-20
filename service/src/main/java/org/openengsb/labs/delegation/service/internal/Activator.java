@@ -3,7 +3,7 @@ package org.openengsb.labs.delegation.service.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.openengsb.labs.delegation.api.Constants;
+import org.openengsb.labs.delegation.service.Constants;
 import org.openengsb.labs.delegation.service.DelegationUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;

@@ -1,4 +1,4 @@
-package org.openengsb.labs.delegation.api;
+package org.openengsb.labs.delegation.service;
 
 import java.net.URL;
 

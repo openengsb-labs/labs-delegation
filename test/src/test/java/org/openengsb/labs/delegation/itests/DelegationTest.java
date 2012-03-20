@@ -66,7 +66,7 @@ public class DelegationTest {
     }
 
     @Test
-    public void installBundle() throws Exception {
+    public void loadPrivateClassFromProvider_consumerShouldLoadClass() throws Exception {
         TinyBundle tinyBundle =
             bundle()
                 .add(TestConsumer.class, InnerClassStrategy.ALL)

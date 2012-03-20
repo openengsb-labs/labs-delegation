@@ -17,14 +17,34 @@
 
 package org.openengsb.labs.delegation.itests.bundles.provider.internal;
 
+import java.util.Hashtable;
+import java.util.concurrent.Callable;
+
+import org.openengsb.labs.delegation.itests.bundles.provider.TestBean;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 public class TestProvider implements BundleActivator {
+
+    public static class PageProvider implements Callable<Object> {
+        private Object content;
+
+        public PageProvider(Object content) {
+            this.content = content;
+        }
+
+        @Override
+        public Object call() throws Exception {
+            return content;
+        }
+    }
+
     @Override
     public void start(BundleContext context) throws Exception {
-        // TODO Auto-generated method stub
-
+        Hashtable<String, Object> properties = new Hashtable<String, Object>();
+        properties.put("type", "pageProvider");
+        context.registerService(Callable.class.getName(), new PageProvider(new TestBean("foo")),
+            properties);
     }
 
     @Override

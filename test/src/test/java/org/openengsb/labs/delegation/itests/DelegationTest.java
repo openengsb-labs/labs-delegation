@@ -19,6 +19,8 @@ package org.openengsb.labs.delegation.itests;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.ops4j.pax.exam.CoreOptions.felix;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
@@ -46,6 +48,7 @@ import org.ops4j.pax.tinybundles.core.TinyBundle;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 @RunWith(JUnit4TestRunner.class)
@@ -96,12 +99,18 @@ public class DelegationTest {
         providerBundle.start();
         consumerBundle.start();
 
-        ServiceReference reference = bundleContext.getServiceReference(Callable.class.getName()); // resultProvider=test
         @SuppressWarnings("unchecked")
-        Callable<Method> resultTask = (Callable<Method>) bundleContext.getService(reference);
+        Callable<Method> resultTask = getOsgiService(Callable.class, "(resultProvider=test)");
         Method method = resultTask.call();
 
         assertThat(method.getName(), is("doSomething"));
         assertThat(method.getParameterTypes(), equalTo(new Class<?>[0]));
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T getOsgiService(Class<T> serviceClass, String filter) throws InvalidSyntaxException {
+        ServiceReference[] references = bundleContext.getServiceReferences(serviceClass.getName(), filter);
+        assertThat("no service found for Class " + serviceClass + " and filter " + filter, references, not(nullValue()));
+        return (T) bundleContext.getService(references[0]);
     }
 }

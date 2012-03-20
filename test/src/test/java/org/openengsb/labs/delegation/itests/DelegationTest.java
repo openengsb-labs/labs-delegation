@@ -40,8 +40,7 @@ public class DelegationTest {
     public Option[] config() {
         return options(
             mavenBundle().groupId("org.ops4j.pax.tinybundles").artifactId("tinybundles").versionAsInProject(),
-            mavenBundle().groupId("org.openengsb.labs.delegation").artifactId("delegation-api").versionAsInProject(),
-            mavenBundle().groupId("org.openengsb.labs.delegation").artifactId("delegation-service")
+            mavenBundle().groupId("org.openengsb.labs.delegation").artifactId("org.openengsb.labs.delegation.service")
                 .versionAsInProject(),
             junitBundles(),
             felix());
@@ -57,7 +56,7 @@ public class DelegationTest {
                 .set(Constants.BUNDLE_SYMBOLICNAME, "test.consumer")
                 .set(Constants.BUNDLE_VERSION, "1.0.0")
                 .set(Constants.IMPORT_PACKAGE,
-                    "org.osgi.framework, org.slf4j, org.openengsb.labs.delegation.api, org.openengsb.labs.delegation.service");
+                    "org.osgi.framework, org.slf4j, org.openengsb.labs.delegation.service");
 
         Bundle consumerBundle =
             bundleContext.installBundle("test://testlocation/test.consumer.jar", tinyBundle.build());
@@ -70,7 +69,7 @@ public class DelegationTest {
                 .set(Constants.BUNDLE_SYMBOLICNAME, "test.provider")
                 .set(Constants.BUNDLE_VERSION, "1.0.0")
                 .set(Constants.IMPORT_PACKAGE,
-                    "org.osgi.framework, org.slf4j, org.openengsb.labs.delegation.api");
+                    "org.osgi.framework, org.slf4j, org.openengsb.labs.delegation.service");
 
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());

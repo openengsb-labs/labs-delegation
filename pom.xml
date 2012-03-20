@@ -40,6 +40,8 @@
     <junit.version>4.10</junit.version>
     <slf4j.version>1.6.4</slf4j.version>
     <mockito.version>1.8.5</mockito.version>
+    <exam.version>2.3.1</exam.version>
+    <url.version>1.3.5</url.version>
     <maven.source.plugin.version>2.1.2</maven.source.plugin.version>
   </properties>
 
@@ -81,12 +83,12 @@
   </build>
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.openengsb.labs.delegation</groupId>
-        <artifactId>delegation-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
+    <!-- Internal Dependencies -->
+    <dependency>
+      <groupId>org.openengsb.labs.delegation</groupId>
+      <artifactId>org.openengsb.labs.delegation.service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
       <!-- OSGi Dependencies -->
       <dependency>
         <groupId>org.osgi</groupId>
@@ -98,15 +100,13 @@
         <artifactId>org.osgi.compendium</artifactId>
         <version>${osgi.version}</version>
       </dependency>
-
       <!-- Logging API -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
-
-      <!-- Test Frameworks -->
+      <!-- Test Libraries -->
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
@@ -119,7 +119,54 @@
         <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <version>1.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.tinybundles</groupId>
+      <artifactId>tinybundles</artifactId>
+      <version>1.0.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-container-native</artifactId>
+      <version>${exam.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-junit4</artifactId>
+      <version>${exam.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-link-mvn</artifactId>
+      <version>${exam.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.url</groupId>
+      <artifactId>pax-url-aether</artifactId>
+      <version>${url.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.framework</artifactId>
+      <version>3.2.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-atinject_1.0_spec</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
     </dependencies>
   </dependencyManagement>
 </project>
-

@@ -28,10 +28,6 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
@@ -101,11 +97,11 @@ public class DelegationTest {
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
         providerBundle.start();
 
-        TinyBundle tinyBundle = createConsumerBundle();
-        providerTinyBundle.add(SerializerConsumer.class).set(Constants.BUNDLE_ACTIVATOR,
+        TinyBundle consumerTinyBundle = createConsumerBundle();
+        consumerTinyBundle.add(SerializerConsumer.class).set(Constants.BUNDLE_ACTIVATOR,
             SerializerConsumer.class.getName());
         Bundle consumerBundle =
-            bundleContext.installBundle("test://testlocation/test.consumer.jar", tinyBundle.build());
+            bundleContext.installBundle("test://testlocation/test.consumer.jar", consumerTinyBundle.build());
         consumerBundle.start();
     }
 

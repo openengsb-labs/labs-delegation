@@ -19,6 +19,10 @@ package org.openengsb.labs.delegation.service;
 
 public final class Constants {
 
+    /**
+     * attribute name used in manifest-headers for declaring which classes should be provided using a
+     * "ClassProvider"-service
+     */
     public static final String PROVIDED_CLASSES = "Provided-Classes";
 
     private Constants() {

@@ -26,10 +26,21 @@ import org.osgi.framework.Bundle;
 
 public final class DelegationUtil {
 
+    /**
+     * registers a ClassProvider service that is able to load all classes contained in the given bundle
+     */
     public static ClassProvider registerClassProviderForBundle(Bundle b) {
         return registerClassProviderForBundle(b, Arrays.asList("*"));
     }
 
+    /**
+     * registers a ClassProvider service that is able to load all classes contained in the given bundle that match any
+     * of the given filters.
+     *
+     * The filters is a list of packages. The list may use wildcards.
+     *
+     * Example: my.bundle.mainpackage, my.bundle.otherpackage.*
+     */
     public static ClassProvider registerClassProviderForBundle(Bundle b, Collection<String> classFilter) {
         ClassProvider service = new ClassloadingDelegateImpl(b, classFilter);
         b.getBundleContext().registerService(ClassProvider.class.getName(), service, new Hashtable<String, Object>());

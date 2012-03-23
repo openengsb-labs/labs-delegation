@@ -21,8 +21,18 @@ import java.net.URL;
 
 public interface ClassProvider {
 
-    Class<?> loadClass(String name) throws ClassNotFoundException;
+    /**
+     * loads the class using the classloader of the bundle providing the service
+     *
+     * The class never enters the caller's classloader
+     *
+     * @throws ClassNotFoundException if the class could not be loaded by this service's bundle
+     */
+    Class<?> loadClass(String classname) throws ClassNotFoundException;
 
-    URL loadRessource(String name);
+    /**
+     * loads the resource using the classloader of the bundle providing the service
+     */
+    URL loadResource(String name);
 
 }

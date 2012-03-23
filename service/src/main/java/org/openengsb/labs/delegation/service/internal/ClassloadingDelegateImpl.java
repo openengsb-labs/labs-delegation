@@ -55,7 +55,7 @@ public class ClassloadingDelegateImpl implements ClassProvider {
     }
 
     @Override
-    public URL loadRessource(String name) {
+    public URL loadResource(String name) {
         LOGGER.debug("loading ressource {} by delegation", name);
         return bundle.getResource(name);
     }

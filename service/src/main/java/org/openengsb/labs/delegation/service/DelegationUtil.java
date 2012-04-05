@@ -38,6 +38,10 @@ public final class DelegationUtil {
         return doRegisterClassProviderForBundle(b, discoverClasses(b));
     }
 
+    /**
+     * registers a ClassProvider service with the given delegationContext that is able to load all classes contained in
+     * the given bundle
+     */
     public static ClassProvider registerClassProviderForBundle(Bundle b, String delegationContext) {
         return doRegisterClassProviderForBundle(b, discoverClasses(b), delegationContext);
     }
@@ -57,8 +61,8 @@ public final class DelegationUtil {
     }
 
     /**
-     * registers a ClassProvider service that is able to load all classes contained in the given bundle that match any
-     * of the given filters.
+     * registers a ClassProvider service with the given delegationContext that is able to load all classes contained in
+     * the given bundle that match any of the given filters.
      * 
      * The filters is a list of packages. The list may use wildcards.
      * 
@@ -78,8 +82,9 @@ public final class DelegationUtil {
         b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
         return service;
     }
-    
-    private static ClassProvider doRegisterClassProviderForBundle(Bundle b, Set<String> classes, String delegationContext) {
+
+    private static ClassProvider doRegisterClassProviderForBundle(Bundle b, Set<String> classes,
+            String delegationContext) {
         ClassProvider service = new ClassloadingDelegateImpl(b, classes);
         Hashtable<String, Object> properties = new Hashtable<String, Object>();
         properties.put(Constants.PROVIDED_CLASSES_KEY, classes);

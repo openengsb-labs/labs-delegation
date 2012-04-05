@@ -30,6 +30,7 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
@@ -130,6 +131,24 @@ public class DelegationTest {
         } catch (ClassNotFoundException e) {
             // expected
         }
+    }
+
+    @Test
+    public void provideBundleHeaderAndListClasses_shouldProvideSpecifiedClassesInList() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES,
+            TestBean.class.getName());
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+        ClassProvider provider = getOsgiService(ClassProvider.class);
+        Collection<Class<?>> listClasses = provider.listClasses();
+        for (Class<?> cls : listClasses) {
+            if (cls.getName().equals(TestBean.class.getName())) {
+                return;
+            }
+        }
+        fail("class-list did not contain required item");
     }
 
     @Test

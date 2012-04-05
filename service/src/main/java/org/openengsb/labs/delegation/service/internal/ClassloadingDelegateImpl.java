@@ -18,6 +18,9 @@
 package org.openengsb.labs.delegation.service.internal;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +36,7 @@ public class ClassloadingDelegateImpl implements ClassProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassloadingDelegateImpl.class);
     private Set<String> classes = new HashSet<String>();
+    private Collection<Class<?>> loadedClasses;
 
     protected Bundle bundle;
 
@@ -44,16 +48,41 @@ public class ClassloadingDelegateImpl implements ClassProvider {
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
         LOGGER.debug("loading class {} by delegation", name);
-        if(classes.contains(name)){
+        if (classes.contains(name)) {
             return bundle.loadClass(name);
         }
         throw new ClassNotFoundException("Could not find class " + name + " using service " + this);
     }
 
     @Override
+    public Collection<Class<?>> listClasses() {
+        if (loadedClasses == null) {
+            loadAllClasses();
+        }
+        return loadedClasses;
+    }
+
+    private void loadAllClasses() {
+        loadedClasses = new ArrayList<Class<?>>();
+        for (String name : classes) {
+            try {
+                loadedClasses.add(bundle.loadClass(name));
+            } catch (ClassNotFoundException e) {
+                LOGGER.warn("could not find class in list " + name, e);
+            }
+        }
+    }
+
+    @Override
     public URL loadResource(String name) {
         LOGGER.debug("loading ressource {} by delegation", name);
         return bundle.getResource(name);
+    }
+
+    @Override
+    public Collection<URL> listResources() {
+        // TODO Auto-generated method stub
+        return Collections.emptySet();
     }
 
 }

@@ -122,7 +122,6 @@ public class DelegationTest {
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
         providerBundle.start();
-        Thread.sleep(1000);
         ClassProvider provider = getOsgiService(ClassProvider.class);
         provider.loadClass(TestBean.class.getName());
         try {
@@ -141,7 +140,6 @@ public class DelegationTest {
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
         providerBundle.start();
-        Thread.sleep(1000);
         ClassProvider provider =
             getOsgiService(ClassProvider.class, String.format("(%s=%s)",
                 org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, TestBean.class.getName()));

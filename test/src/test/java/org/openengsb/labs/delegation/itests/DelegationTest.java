@@ -22,6 +22,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.allFrameworks;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
@@ -50,8 +51,11 @@ import org.ops4j.pax.tinybundles.core.TinyBundle;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(JUnit4TestRunner.class)
 @ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
@@ -67,8 +71,7 @@ public class DelegationTest {
             mavenBundle().groupId("org.openengsb.labs.delegation").artifactId("org.openengsb.labs.delegation.service")
                 .versionAsInProject(),
             junitBundles(),
-            allFrameworks()
-            );
+            allFrameworks());
     }
 
     @Test
@@ -109,7 +112,25 @@ public class DelegationTest {
         providerBundle.stop();
         serviceReference = bundleContext.getServiceReference(ClassProvider.class.getName());
         assertThat(serviceReference, nullValue());
+    }
 
+    @Test
+    public void provideBundleHeader_shouldOnlyProvideSpecifiedClasses() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES,
+            TestBean.class.getName());
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+        Thread.sleep(1000);
+        ClassProvider provider = getOsgiService(ClassProvider.class);
+        provider.loadClass(TestBean.class.getName());
+        try {
+            provider.loadClass(ChildBean.class.getName());
+            fail("expected class not to be found");
+        } catch (ClassNotFoundException e) {
+            // expected
+        }
     }
 
     private TinyBundle createProviderBundle() {
@@ -142,9 +163,19 @@ public class DelegationTest {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T getOsgiService(Class<T> serviceClass, String filter) throws InvalidSyntaxException {
-        ServiceReference[] references = bundleContext.getServiceReferences(serviceClass.getName(), filter);
-        assertThat("no service found for Class " + serviceClass + " and filter " + filter, references, not(nullValue()));
-        return (T) bundleContext.getService(references[0]);
+    private <T> T getOsgiService(Class<T> serviceClass) throws InvalidSyntaxException, InterruptedException {
+        ServiceTracker serviceTracker = new ServiceTracker(bundleContext, serviceClass.getName(), null);
+        serviceTracker.open();
+        return (T) serviceTracker.waitForService(5000);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T getOsgiService(Class<T> serviceClass, String filter) throws InvalidSyntaxException,
+        InterruptedException {
+        String filterString = String.format("(&(%s=%s)%s)", Constants.OBJECTCLASS, serviceClass.getName(), filter);
+        Filter filterObj = FrameworkUtil.createFilter(filterString);
+        ServiceTracker serviceTracker = new ServiceTracker(bundleContext, filterObj, null);
+        serviceTracker.open();
+        return (T) serviceTracker.waitForService(5000);
     }
 }

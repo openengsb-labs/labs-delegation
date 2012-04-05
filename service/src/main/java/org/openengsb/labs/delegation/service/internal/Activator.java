@@ -22,8 +22,12 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.util.tracker.BundleTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
 
     private BundleTracker bundleTracker;
 
@@ -32,15 +36,12 @@ public class Activator implements BundleActivator {
         bundleTracker = new BundleTracker(context, Bundle.ACTIVE, null) {
             @Override
             public Object addingBundle(Bundle bundle, BundleEvent event) {
-                handleBundleInstall(bundle);
+                LOGGER.info("adding bundle {} {}", bundle.getSymbolicName(), bundle);
+                BundleHandler.processBundle(bundle);
                 return null;
             }
         };
         bundleTracker.open();
-    }
-
-    private synchronized void handleBundleInstall(Bundle bundle) {
-        BundleHandler.processBundle(bundle);
     }
 
     @Override

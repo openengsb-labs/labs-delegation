@@ -206,6 +206,31 @@ public class DelegationTest {
         }
     }
 
+    @Test
+    public void reinstallProviderBundle_shouldReregisterServices() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+
+        TinyBundle tinyBundle = createConsumerBundle();
+        Bundle consumerBundle =
+            bundleContext.installBundle("test://testlocation/test.consumer.jar", tinyBundle.build());
+        consumerBundle.start();
+
+        ServiceReference serviceReference = bundleContext.getServiceReference(ClassProvider.class.getName());
+        assertThat(serviceReference, not(nullValue()));
+
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES,
+            TestService.class.getName());
+        providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+        ClassProvider service = getOsgiService(ClassProvider.class, String.format("(%s=%s)",
+            org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, TestService.class.getName()));
+        assertThat(service, not(nullValue()));
+    }
+
     private TinyBundle createProviderBundle() {
         TinyBundle providerTinyBundle =
             bundle()

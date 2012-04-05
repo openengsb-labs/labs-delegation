@@ -22,7 +22,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.ops4j.pax.exam.CoreOptions.felix;
+import static org.ops4j.pax.exam.CoreOptions.allFrameworks;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -40,6 +40,7 @@ import org.openengsb.labs.delegation.itests.bundles.provider.ChildBean;
 import org.openengsb.labs.delegation.itests.bundles.provider.TestBean;
 import org.openengsb.labs.delegation.itests.bundles.provider.TestService;
 import org.openengsb.labs.delegation.itests.bundles.provider.internal.TestProvider;
+import org.openengsb.labs.delegation.service.ClassProvider;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.ExamReactorStrategy;
@@ -66,7 +67,8 @@ public class DelegationTest {
             mavenBundle().groupId("org.openengsb.labs.delegation").artifactId("org.openengsb.labs.delegation.service")
                 .versionAsInProject(),
             junitBundles(),
-            felix());
+            allFrameworks()
+            );
     }
 
     @Test
@@ -87,6 +89,27 @@ public class DelegationTest {
 
         assertThat(method.getName(), is("doSomething"));
         assertThat(method.getParameterTypes(), equalTo(new Class<?>[0]));
+    }
+
+    @Test
+    public void stopProviderBundle_shouldUnregisterServices() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+
+        TinyBundle tinyBundle = createConsumerBundle();
+        Bundle consumerBundle =
+            bundleContext.installBundle("test://testlocation/test.consumer.jar", tinyBundle.build());
+        consumerBundle.start();
+
+        ServiceReference serviceReference = bundleContext.getServiceReference(ClassProvider.class.getName());
+        assertThat(serviceReference, not(nullValue()));
+
+        providerBundle.stop();
+        serviceReference = bundleContext.getServiceReference(ClassProvider.class.getName());
+        assertThat(serviceReference, nullValue());
+
     }
 
     private TinyBundle createProviderBundle() {

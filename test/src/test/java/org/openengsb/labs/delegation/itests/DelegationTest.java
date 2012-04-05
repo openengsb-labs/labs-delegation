@@ -133,6 +133,27 @@ public class DelegationTest {
         }
     }
 
+    @Test
+    public void provideBundleHeader_shouldProvideServiceWithProvidedClassesInProperties() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES,
+            TestBean.class.getName());
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+        Thread.sleep(1000);
+        ClassProvider provider =
+            getOsgiService(ClassProvider.class, String.format("(%s=%s)",
+                org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, TestBean.class.getName()));
+        provider.loadClass(TestBean.class.getName());
+        try {
+            provider.loadClass(ChildBean.class.getName());
+            fail("expected class not to be found");
+        } catch (ClassNotFoundException e) {
+            // expected
+        }
+    }
+
     private TinyBundle createProviderBundle() {
         TinyBundle providerTinyBundle =
             bundle()

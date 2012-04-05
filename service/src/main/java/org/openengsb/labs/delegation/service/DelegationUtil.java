@@ -17,9 +17,14 @@
 
 package org.openengsb.labs.delegation.service;
 
-import java.util.Arrays;
+import java.net.URL;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.openengsb.labs.delegation.service.internal.ClassloadingDelegateImpl;
 import org.osgi.framework.Bundle;
@@ -30,21 +35,75 @@ public final class DelegationUtil {
      * registers a ClassProvider service that is able to load all classes contained in the given bundle
      */
     public static ClassProvider registerClassProviderForBundle(Bundle b) {
-        return registerClassProviderForBundle(b, Arrays.asList("*"));
+        return doRegisterClassProviderForBundle(b, discoverClasses(b));
     }
 
     /**
      * registers a ClassProvider service that is able to load all classes contained in the given bundle that match any
      * of the given filters.
-     *
+     * 
      * The filters is a list of packages. The list may use wildcards.
-     *
+     * 
      * Example: my.bundle.mainpackage, my.bundle.otherpackage.*
      */
     public static ClassProvider registerClassProviderForBundle(Bundle b, Collection<String> classFilter) {
-        ClassProvider service = new ClassloadingDelegateImpl(b, classFilter);
-        b.getBundleContext().registerService(ClassProvider.class.getName(), service, new Hashtable<String, Object>());
+        Collection<String> discoveredClasses = discoverClasses(b);
+        Set<String> matchingClasses = getMatchingClasses(classFilter, discoveredClasses);
+        return doRegisterClassProviderForBundle(b, matchingClasses);
+    }
+
+    private static ClassProvider doRegisterClassProviderForBundle(Bundle b, Set<String> classes) {
+        ClassProvider service = new ClassloadingDelegateImpl(b, classes);
+        Hashtable<String, Object> properties = new Hashtable<String, Object>();
+        properties.put(Constants.PROVIDED_CLASSES_KEY, classes);
+        b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
         return service;
+    }
+
+    private static Set<String> getMatchingClasses(Collection<String> classFilters, Collection<String> allClasses) {
+        Set<String> matchingClasses = new HashSet<String>();
+        Collection<String> expressions = prepareFilterExpressions(classFilters);
+        for (String classname : allClasses) {
+            for (String e : expressions) {
+                if (Pattern.matches(e, classname)) {
+                    matchingClasses.add(classname);
+                    break;
+                }
+            }
+        }
+        return matchingClasses;
+    }
+
+    private static Collection<String> prepareFilterExpressions(Collection<String> classFilters) {
+        Collection<String> expressions = new LinkedList<String>();
+        for (String cFilter : classFilters) {
+            expressions.add(
+                cFilter
+                    .replaceAll("\\.", "\\.")
+                    .replaceAll("\\*", ".*")
+                );
+        }
+        return expressions;
+    }
+
+    private static Set<String> discoverClasses(Bundle bundle) {
+        @SuppressWarnings("unchecked")
+        Enumeration<URL> classEntries = bundle.findEntries("/", "*.class", true);
+        Set<String> discoveredClasses = new HashSet<String>();
+        while (classEntries.hasMoreElements()) {
+            URL classURL = classEntries.nextElement();
+            String className = extractClassName(classURL);
+            discoveredClasses.add(className);
+        }
+        return discoveredClasses;
+    }
+
+    private static String extractClassName(URL classURL) {
+        String path = classURL.getPath();
+        return path
+            .replaceAll("^/", "")
+            .replaceAll(".class$", "")
+            .replaceAll("\\/", ".");
     }
 
     private DelegationUtil() {

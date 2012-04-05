@@ -24,6 +24,7 @@ public final class Constants {
      * "ClassProvider"-service
      */
     public static final String PROVIDED_CLASSES = "Provided-Classes";
+    public static final String PROVIDED_CLASSES_KEY = "providedClasses";
 
     private Constants() {
     }

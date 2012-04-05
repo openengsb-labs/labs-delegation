@@ -35,7 +35,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openengsb.labs.delegation.itests.bundles.consumer.internal.SerializerConsumer;
 import org.openengsb.labs.delegation.itests.bundles.consumer.internal.TestConsumer;
 import org.openengsb.labs.delegation.itests.bundles.provider.ChildBean;
 import org.openengsb.labs.delegation.itests.bundles.provider.TestBean;
@@ -88,21 +87,6 @@ public class DelegationTest {
 
         assertThat(method.getName(), is("doSomething"));
         assertThat(method.getParameterTypes(), equalTo(new Class<?>[0]));
-    }
-
-    @Test
-    public void testSerializeBeanOfPrivateType() throws Exception {
-        TinyBundle providerTinyBundle = createProviderBundle();
-        Bundle providerBundle =
-            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
-        providerBundle.start();
-
-        TinyBundle consumerTinyBundle = createConsumerBundle();
-        consumerTinyBundle.add(SerializerConsumer.class).set(Constants.BUNDLE_ACTIVATOR,
-            SerializerConsumer.class.getName());
-        Bundle consumerBundle =
-            bundleContext.installBundle("test://testlocation/test.consumer.jar", consumerTinyBundle.build());
-        consumerBundle.start();
     }
 
     private TinyBundle createProviderBundle() {

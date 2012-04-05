@@ -19,6 +19,7 @@ package org.openengsb.labs.delegation.service.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 
 import org.openengsb.labs.delegation.service.Constants;
 import org.openengsb.labs.delegation.service.DelegationUtil;
@@ -54,12 +55,20 @@ public class Activator implements BundleActivator {
 
     private synchronized void handleBundleInstall(Bundle b) {
         LOGGER.info("injecting ClassProvider-Service into bundle {}.", b.getSymbolicName());
-        String providedClassesString = (String) b.getHeaders().get(Constants.PROVIDED_CLASSES);
-        if (providedClassesString == null || providedClassesString.isEmpty()) {
-            return;
+        Enumeration<String> keys = b.getHeaders().keys();
+        while (keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            if (key.equals(Constants.PROVIDED_CLASSES)) {
+                String providedClassesString = (String) b.getHeaders().get(key);
+                Collection<String> providedClasses = parseProvidedClasses(providedClassesString);
+                DelegationUtil.registerClassProviderForBundle(b, providedClasses);
+            } else if (key.startsWith(Constants.PROVIDED_CLASSES)) {
+                String context = key.replaceFirst(Constants.PROVIDED_CLASSES + "\\-", "");
+                String providedClassesString = (String) b.getHeaders().get(key);
+                Collection<String> providedClasses = parseProvidedClasses(providedClassesString);
+                DelegationUtil.registerClassProviderForBundle(b, providedClasses, context);
+            }
         }
-        Collection<String> providedClasses = parseProvidedClasses(providedClassesString);
-        DelegationUtil.registerClassProviderForBundle(b, providedClasses);
     }
 
     private Collection<String> parseProvidedClasses(String providedClassesString) {

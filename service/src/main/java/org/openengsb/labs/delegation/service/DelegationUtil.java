@@ -38,6 +38,10 @@ public final class DelegationUtil {
         return doRegisterClassProviderForBundle(b, discoverClasses(b));
     }
 
+    public static ClassProvider registerClassProviderForBundle(Bundle b, String delegationContext) {
+        return doRegisterClassProviderForBundle(b, discoverClasses(b), delegationContext);
+    }
+
     /**
      * registers a ClassProvider service that is able to load all classes contained in the given bundle that match any
      * of the given filters.
@@ -52,10 +56,34 @@ public final class DelegationUtil {
         return doRegisterClassProviderForBundle(b, matchingClasses);
     }
 
+    /**
+     * registers a ClassProvider service that is able to load all classes contained in the given bundle that match any
+     * of the given filters.
+     * 
+     * The filters is a list of packages. The list may use wildcards.
+     * 
+     * Example: my.bundle.mainpackage, my.bundle.otherpackage.*
+     */
+    public static ClassProvider registerClassProviderForBundle(Bundle b, Collection<String> classFilter,
+            String delegationContext) {
+        Collection<String> discoveredClasses = discoverClasses(b);
+        Set<String> matchingClasses = getMatchingClasses(classFilter, discoveredClasses);
+        return doRegisterClassProviderForBundle(b, matchingClasses, delegationContext);
+    }
+
     private static ClassProvider doRegisterClassProviderForBundle(Bundle b, Set<String> classes) {
         ClassProvider service = new ClassloadingDelegateImpl(b, classes);
         Hashtable<String, Object> properties = new Hashtable<String, Object>();
         properties.put(Constants.PROVIDED_CLASSES_KEY, classes);
+        b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
+        return service;
+    }
+    
+    private static ClassProvider doRegisterClassProviderForBundle(Bundle b, Set<String> classes, String delegationContext) {
+        ClassProvider service = new ClassloadingDelegateImpl(b, classes);
+        Hashtable<String, Object> properties = new Hashtable<String, Object>();
+        properties.put(Constants.PROVIDED_CLASSES_KEY, classes);
+        properties.put(Constants.DELEGATION_CONTEXT, delegationContext);
         b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
         return service;
     }

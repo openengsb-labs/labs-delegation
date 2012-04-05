@@ -55,6 +55,7 @@ public class Activator implements BundleActivator {
 
     private synchronized void handleBundleInstall(Bundle b) {
         LOGGER.info("injecting ClassProvider-Service into bundle {}.", b.getSymbolicName());
+        @SuppressWarnings("unchecked")
         Enumeration<String> keys = b.getHeaders().keys();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();

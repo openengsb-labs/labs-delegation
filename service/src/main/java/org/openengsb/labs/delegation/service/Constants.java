@@ -26,6 +26,7 @@ public final class Constants {
     public static final String PROVIDED_CLASSES = "Provided-Classes";
     public static final String PROVIDED_CLASSES_KEY = "providedClasses";
     public static final String DELEGATION_CONTEXT = "delegationContext";
+    public static final String DELEGATION_ANNOTATIONS = "Delegation-Annotations";
 
     private Constants() {
     }

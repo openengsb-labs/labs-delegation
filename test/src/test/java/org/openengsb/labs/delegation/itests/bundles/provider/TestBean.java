@@ -2,6 +2,9 @@ package org.openengsb.labs.delegation.itests.bundles.provider;
 
 import java.io.Serializable;
 
+import org.openengsb.labs.delegation.service.Provide;
+
+@Provide({ "foo", "bar" })
 public class TestBean implements Serializable {
 
     private static final long serialVersionUID = 8283996056794425281L;
@@ -32,23 +35,30 @@ public class TestBean implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         TestBean other = (TestBean) obj;
         if (child == null) {
-            if (other.child != null)
+            if (other.child != null) {
                 return false;
-        } else if (!child.equals(other.child))
+            }
+        } else if (!child.equals(other.child)) {
             return false;
+        }
         if (id == null) {
-            if (other.id != null)
+            if (other.id != null) {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        } else if (!id.equals(other.id)) {
             return false;
+        }
         return true;
     }
 

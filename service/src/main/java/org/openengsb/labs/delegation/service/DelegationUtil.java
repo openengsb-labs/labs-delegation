@@ -19,13 +19,13 @@ package org.openengsb.labs.delegation.service;
 
 import java.net.URL;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.openengsb.labs.delegation.service.internal.Activator;
 import org.openengsb.labs.delegation.service.internal.ClassloadingDelegateImpl;
 import org.osgi.framework.Bundle;
 
@@ -35,7 +35,7 @@ public final class DelegationUtil {
      * registers a ClassProvider service that is able to load all classes contained in the given bundle
      */
     public static ClassProvider registerClassProviderForBundle(Bundle b) {
-        return doRegisterClassProviderForBundle(b, discoverClasses(b));
+        return doRegisterClassProviderForBundle(b, Activator.discoverClasses(b));
     }
 
     /**
@@ -43,7 +43,7 @@ public final class DelegationUtil {
      * the given bundle
      */
     public static ClassProvider registerClassProviderForBundle(Bundle b, String delegationContext) {
-        return doRegisterClassProviderForBundle(b, discoverClasses(b), delegationContext);
+        return doRegisterClassProviderForBundle(b, Activator.discoverClasses(b), delegationContext);
     }
 
     /**
@@ -55,7 +55,7 @@ public final class DelegationUtil {
      * Example: my.bundle.mainpackage, my.bundle.otherpackage.*
      */
     public static ClassProvider registerClassProviderForBundle(Bundle b, Collection<String> classFilter) {
-        Collection<String> discoveredClasses = discoverClasses(b);
+        Collection<String> discoveredClasses = Activator.discoverClasses(b);
         Set<String> matchingClasses = getMatchingClasses(classFilter, discoveredClasses);
         return doRegisterClassProviderForBundle(b, matchingClasses);
     }
@@ -70,7 +70,7 @@ public final class DelegationUtil {
      */
     public static ClassProvider registerClassProviderForBundle(Bundle b, Collection<String> classFilter,
             String delegationContext) {
-        Collection<String> discoveredClasses = discoverClasses(b);
+        Collection<String> discoveredClasses = Activator.discoverClasses(b);
         Set<String> matchingClasses = getMatchingClasses(classFilter, discoveredClasses);
         return doRegisterClassProviderForBundle(b, matchingClasses, delegationContext);
     }
@@ -119,19 +119,7 @@ public final class DelegationUtil {
         return expressions;
     }
 
-    private static Set<String> discoverClasses(Bundle bundle) {
-        @SuppressWarnings("unchecked")
-        Enumeration<URL> classEntries = bundle.findEntries("/", "*.class", true);
-        Set<String> discoveredClasses = new HashSet<String>();
-        while (classEntries.hasMoreElements()) {
-            URL classURL = classEntries.nextElement();
-            String className = extractClassName(classURL);
-            discoveredClasses.add(className);
-        }
-        return discoveredClasses;
-    }
-
-    private static String extractClassName(URL classURL) {
+    public static String extractClassName(URL classURL) {
         String path = classURL.getPath();
         return path
             .replaceAll("^/", "")

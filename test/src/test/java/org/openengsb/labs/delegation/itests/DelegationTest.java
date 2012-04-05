@@ -173,6 +173,39 @@ public class DelegationTest {
         }
     }
 
+    @Test
+    public void provideBundleWithAnnotations_shouldProvideClasses() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS, "true");
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+        ClassProvider provider =
+            getOsgiService(ClassProvider.class, String.format("(%s=%s)",
+                org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, TestBean.class.getName()));
+        provider.loadClass(TestBean.class.getName());
+    }
+
+    @Test
+    public void provideBundleWithAnnotationsInContext_shouldProvideClassesInContext() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS, "true");
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+        ClassProvider provider =
+            getOsgiService(ClassProvider.class, String.format("(&(%s=%s)(%s=%s))",
+                org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, TestBean.class.getName(),
+                org.openengsb.labs.delegation.service.Constants.DELEGATION_CONTEXT, "foo"));
+        provider.loadClass(TestBean.class.getName());
+        try {
+            provider.loadClass(ChildBean.class.getName());
+            fail("expected class not to be found");
+        } catch (ClassNotFoundException e) {
+            // expected
+        }
+    }
+
     private TinyBundle createProviderBundle() {
         TinyBundle providerTinyBundle =
             bundle()

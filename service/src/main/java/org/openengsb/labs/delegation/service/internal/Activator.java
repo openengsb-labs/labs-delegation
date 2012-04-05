@@ -21,26 +21,22 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
+import org.osgi.util.tracker.BundleTracker;
 
 public class Activator implements BundleActivator {
 
+    private BundleTracker bundleTracker;
+
     @Override
     public void start(BundleContext context) {
-        BundleListener bundleListener = new BundleListener() {
+        bundleTracker = new BundleTracker(context, Bundle.ACTIVE, null) {
             @Override
-            public void bundleChanged(BundleEvent event) {
-                if (event.getType() == BundleEvent.STARTED) {
-                    handleBundleInstall(event.getBundle());
-                }
+            public Object addingBundle(Bundle bundle, BundleEvent event) {
+                handleBundleInstall(bundle);
+                return null;
             }
         };
-        context.addBundleListener(bundleListener);
-        for (Bundle b : context.getBundles()) {
-            if (b.getState() == Bundle.ACTIVE) {
-                handleBundleInstall(b);
-            }
-        }
+        bundleTracker.open();
     }
 
     private synchronized void handleBundleInstall(Bundle bundle) {
@@ -49,7 +45,7 @@ public class Activator implements BundleActivator {
 
     @Override
     public void stop(BundleContext context) throws Exception {
-
+        bundleTracker.close();
     }
 
 }

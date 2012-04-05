@@ -95,6 +95,11 @@
         <artifactId>org.osgi.core</artifactId>
         <version>${osgi.version}</version>
       </dependency>
+	  <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.compendium</artifactId>
+        <version>${osgi.version}</version>
+      </dependency>
       <!-- Logging API -->
       <dependency>
         <groupId>org.slf4j</groupId>

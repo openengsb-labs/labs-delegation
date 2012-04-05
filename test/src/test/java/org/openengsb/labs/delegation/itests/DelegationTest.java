@@ -250,6 +250,34 @@ public class DelegationTest {
         assertThat(service, not(nullValue()));
     }
 
+    @Test
+    public void installBundleInTwoVersions_shouldCreateSeparateClassProviders() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS, "true");
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+
+        TinyBundle providerTinyBundle2 = createProviderBundle();
+        providerTinyBundle2.set(Constants.BUNDLE_VERSION, "1.0.1");
+        providerTinyBundle2.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS, "true");
+        Bundle providerBundle2 =
+            bundleContext.installBundle("test://testlocation/test.provider2.jar", providerTinyBundle2.build());
+        providerBundle2.start();
+
+        ClassProvider provider1 = getOsgiService(ClassProvider.class, String.format("(&(%s=%s)(%s=%s))",
+            org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, TestBean.class.getName(),
+            org.openengsb.labs.delegation.service.Constants.CLASS_VERSION, "1.0.0"));
+
+        ClassProvider provider2 = getOsgiService(ClassProvider.class, String.format("(&(%s=%s)(%s=%s))",
+            org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, TestBean.class.getName(),
+            org.openengsb.labs.delegation.service.Constants.CLASS_VERSION, "1.0.1"));
+
+        assertThat(provider1, not(nullValue()));
+        assertThat(provider2, not(nullValue()));
+        assertThat(provider1, not(equalTo(provider2)));
+    }
+
     private TinyBundle createProviderBundle() {
         TinyBundle providerTinyBundle =
             bundle()

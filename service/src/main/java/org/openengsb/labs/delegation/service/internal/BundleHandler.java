@@ -156,6 +156,7 @@ public class BundleHandler {
         ClassProvider service = new ClassloadingDelegateImpl(b, classes);
         Hashtable<String, Object> properties = new Hashtable<String, Object>();
         properties.put(Constants.PROVIDED_CLASSES_KEY, classes);
+        properties.put(Constants.CLASS_VERSION, b.getVersion().toString());
         b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
         return service;
     }
@@ -165,6 +166,7 @@ public class BundleHandler {
         ClassProvider service = new ClassloadingDelegateImpl(b, classes);
         Hashtable<String, Object> properties = new Hashtable<String, Object>();
         properties.put(Constants.PROVIDED_CLASSES_KEY, classes);
+        properties.put(Constants.CLASS_VERSION, b.getVersion().toString());
         properties.put(Constants.DELEGATION_CONTEXT, delegationContext);
         b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
         return service;

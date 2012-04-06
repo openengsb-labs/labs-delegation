@@ -17,7 +17,6 @@
 
 package org.openengsb.labs.delegation.service;
 
-import java.net.URL;
 import java.util.Collection;
 
 public interface ClassProvider {
@@ -35,15 +34,5 @@ public interface ClassProvider {
      * returns a list of all classes provided by this service
      */
     Collection<Class<?>> listClasses();
-
-    /**
-     * loads the resource using the classloader of the bundle providing the service
-     */
-    URL loadResource(String name);
-
-    /**
-     * returns a list of all resources provided by this service
-     */
-    Collection<URL> listResources();
 
 }

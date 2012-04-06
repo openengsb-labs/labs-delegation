@@ -153,7 +153,7 @@ public class BundleHandler {
     }
 
     private static ClassProvider doRegisterClassProviderForBundle(Bundle b, Set<String> classes) {
-        ClassProvider service = new ClassloadingDelegateImpl(b, classes);
+        ClassProvider service = new ClassProviderImpl(b, classes);
         Hashtable<String, Object> properties = new Hashtable<String, Object>();
         properties.put(Constants.PROVIDED_CLASSES_KEY, classes);
         properties.put(Constants.CLASS_VERSION, b.getVersion().toString());
@@ -163,7 +163,7 @@ public class BundleHandler {
 
     private static ClassProvider doRegisterClassProviderForBundle(Bundle b, Set<String> classes,
             String delegationContext) {
-        ClassProvider service = new ClassloadingDelegateImpl(b, classes);
+        ClassProvider service = new ClassProviderImpl(b, classes);
         Hashtable<String, Object> properties = new Hashtable<String, Object>();
         properties.put(Constants.PROVIDED_CLASSES_KEY, classes);
         properties.put(Constants.CLASS_VERSION, b.getVersion().toString());

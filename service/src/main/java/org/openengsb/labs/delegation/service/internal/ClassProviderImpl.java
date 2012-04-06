@@ -17,10 +17,8 @@
 
 package org.openengsb.labs.delegation.service.internal;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,15 +30,15 @@ import org.slf4j.LoggerFactory;
 /**
  * Helps to provide a Simple Delegated class-loading provider, configurable as a bean.
  */
-public class ClassloadingDelegateImpl implements ClassProvider {
+public class ClassProviderImpl implements ClassProvider {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClassloadingDelegateImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassProviderImpl.class);
     private Set<String> classes = new HashSet<String>();
     private Collection<Class<?>> loadedClasses;
 
     protected Bundle bundle;
 
-    public ClassloadingDelegateImpl(Bundle bundle, Set<String> classes) {
+    public ClassProviderImpl(Bundle bundle, Set<String> classes) {
         this.bundle = bundle;
         this.classes = classes;
     }
@@ -71,18 +69,6 @@ public class ClassloadingDelegateImpl implements ClassProvider {
                 LOGGER.warn("could not find class in list " + name, e);
             }
         }
-    }
-
-    @Override
-    public URL loadResource(String name) {
-        LOGGER.debug("loading ressource {} by delegation", name);
-        return bundle.getResource(name);
-    }
-
-    @Override
-    public Collection<URL> listResources() {
-        // TODO Auto-generated method stub
-        return Collections.emptySet();
     }
 
 }

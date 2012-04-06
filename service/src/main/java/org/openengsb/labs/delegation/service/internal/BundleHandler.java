@@ -123,10 +123,11 @@ public class BundleHandler {
                 continue;
             }
             Provide provide = clazz.getAnnotation(Provide.class);
-            if (provide != null) {
-                for (String context : provide.value()) {
-                    addClassToContext(context, classname);
-                }
+            if (provide == null) {
+                continue;
+            }
+            for (String context : provide.value()) {
+                addClassToContext(context, classname);
             }
         }
     }
@@ -136,13 +137,14 @@ public class BundleHandler {
         Enumeration<String> keys = bundle.getHeaders().keys();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
-            if (key.startsWith(Constants.PROVIDED_CLASSES + "-")) {
-                String context = key.replaceFirst(Constants.PROVIDED_CLASSES + "\\-", "");
-                String providedClassesString = (String) bundle.getHeaders().get(key);
-                Collection<String> providedClasses = parseProvidedClasses(providedClassesString);
-                Set<String> matchingClasses = getMatchingClasses(providedClasses);
-                addClassesToContext(context, matchingClasses);
+            if (!key.startsWith(Constants.PROVIDED_CLASSES + "-")) {
+                continue;
             }
+            String context = key.replaceFirst(Constants.PROVIDED_CLASSES + "\\-", "");
+            String providedClassesString = (String) bundle.getHeaders().get(key);
+            Collection<String> providedClasses = parseProvidedClasses(providedClassesString);
+            Set<String> matchingClasses = getMatchingClasses(providedClasses);
+            addClassesToContext(context, matchingClasses);
         }
     }
 

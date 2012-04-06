@@ -284,13 +284,29 @@ public class DelegationTest {
     }
 
     @Test
-    public void provideResourcesViaBundleHeader_shouldOnlyProvideSpecifiedResources() throws Exception {
+    public void provideResourcesByInjectingService_shouldOnlyProvideSpecifiedResources() throws Exception {
         TinyBundle providerTinyBundle = createProviderBundle();
         providerTinyBundle.add("resources/test.xml", new ByteArrayInputStream("<test></test>".getBytes()));
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
         providerBundle.start();
         DelegationUtil.registerResourceProviderForBundle(providerBundle, Arrays.asList("resources/*"));
+        ResourceProvider provider = getOsgiService(ResourceProvider.class);
+        URL loadResource = provider.loadResource("resources/test.xml");
+        assertThat(loadResource, not(nullValue()));
+        String readLine = new BufferedReader(new InputStreamReader(loadResource.openStream())).readLine();
+        assertThat(readLine, is("<test></test>"));
+    }
+    
+    @Test
+    public void provideResourcesViaBundleHeader_shouldOnlyProvideSpecifiedResources() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        providerTinyBundle.add("resources/test.xml", new ByteArrayInputStream("<test></test>".getBytes()));
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_RESOURCES,
+            "resources/test.xml");
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
         ResourceProvider provider = getOsgiService(ResourceProvider.class);
         URL loadResource = provider.loadResource("resources/test.xml");
         assertThat(loadResource, not(nullValue()));

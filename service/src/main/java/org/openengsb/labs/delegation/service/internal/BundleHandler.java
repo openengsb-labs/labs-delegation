@@ -27,6 +27,7 @@ public class BundleHandler {
 
     private Bundle bundle;
     private Map<String, Set<String>> providedClassesMap = new HashMap<String, Set<String>>();
+    private Map<String, Set<String>> providedResourcesMap = new HashMap<String, Set<String>>();
 
     private Set<String> bundleClasses;
 
@@ -81,10 +82,13 @@ public class BundleHandler {
     }
 
     public void scanBundle() {
+        providedResourcesMap.clear();
         providedClassesMap.clear();
         analyzePlainProvidesHeader();
         analyzeProvidesHeadersWithContext();
         analyzeAnnotations();
+        checkResourcesHeader();
+        checkResourcesHeaderWithContext();
     }
 
     public void handle() {
@@ -95,6 +99,13 @@ public class BundleHandler {
         }
         for (Map.Entry<String, Set<String>> entry : providedClassesMap.entrySet()) {
             doRegisterClassProviderForBundle(bundle, entry.getValue(), entry.getKey());
+        }
+        if (providedResourcesMap.containsKey("")) {
+            Set<String> allResources = providedResourcesMap.remove("");
+            doRegisterResourceProvider(bundle, allResources);
+        }
+        for (Map.Entry<String, Set<String>> entry : providedResourcesMap.entrySet()) {
+            doRegisterResourceProvider(bundle, entry.getValue(), entry.getKey());
         }
     }
 
@@ -113,7 +124,6 @@ public class BundleHandler {
             }
             Provide provide = clazz.getAnnotation(Provide.class);
             if (provide != null) {
-                addClassToContext("", classname);
                 for (String context : provide.value()) {
                     addClassToContext(context, classname);
                 }
@@ -146,6 +156,34 @@ public class BundleHandler {
         addClassesToContext("", matchingClasses);
     }
 
+    private void checkResourcesHeaderWithContext() {
+        @SuppressWarnings("unchecked")
+        Enumeration<String> keys = bundle.getHeaders().keys();
+        while (keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            if (!key.startsWith(Constants.PROVIDED_RESOURCES + "-")) {
+                continue;
+            }
+            String context = key.replaceFirst(Constants.PROVIDED_RESOURCES + "\\-", "");
+            String providedResourcesString = (String) bundle.getHeaders().get(key);
+            addAllResourcesToContext(providedResourcesString, context);
+        }
+    }
+
+    private void addAllResourcesToContext(String providedResourcesString, String context) {
+        Collection<String> resourceFilter = parseProvidedClasses(providedResourcesString);
+        Set<String> matchingResources = getMatchingResources(resourceFilter);
+        addResourcesToContext(context, matchingResources);
+    }
+
+    private void checkResourcesHeader() {
+        String providedResourcesString = (String) bundle.getHeaders().get(Constants.PROVIDED_RESOURCES);
+        if (providedResourcesString == null || providedResourcesString.isEmpty()) {
+            return;
+        }
+        addAllResourcesToContext(providedResourcesString, "");
+    }
+
     private Collection<String> parseProvidedClasses(String providedClassesString) {
         String[] providedClassesArray = providedClassesString.split(",");
         Collection<String> providedClassesList = new ArrayList<String>();
@@ -160,6 +198,14 @@ public class BundleHandler {
             providedClassesMap.put(context, new HashSet<String>());
         }
         providedClassesMap.get(context).add(clazz);
+    }
+
+    private void addResourcesToContext(String context, Set<String> resources) {
+        if (!providedResourcesMap.containsKey(context)) {
+            providedResourcesMap.put(context, resources);
+        } else {
+            providedResourcesMap.get(context).addAll(resources);
+        }
     }
 
     private void addClassesToContext(String context, Set<String> classes) {
@@ -189,7 +235,6 @@ public class BundleHandler {
         b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
         return service;
     }
-    
 
     private static void doRegisterResourceProvider(Bundle bundle, Set<String> matchingResources) {
         ResourceProvider service = new ResourceProviderImpl(bundle, matchingResources);
@@ -226,12 +271,16 @@ public class BundleHandler {
     private Set<String> getMatchingResources(Collection<String> fileFilters) {
         Set<String> matchingFiles = new HashSet<String>();
         for (String p : fileFilters) {
-            
+
             int lastIndexOf = p.lastIndexOf("/");
             String path = "/" + p.substring(0, lastIndexOf);
-            String pattern = p.substring(lastIndexOf+1);
+            String pattern = p.substring(lastIndexOf + 1);
             @SuppressWarnings("unchecked")
             Enumeration<URL> resources = bundle.findEntries(path, pattern, true);
+            if (resources == null) {
+                LOGGER.warn("no resources found for pattern", p);
+                continue;
+            }
             while (resources.hasMoreElements()) {
                 matchingFiles.add(resources.nextElement().getPath().replaceFirst("^/", ""));
             }

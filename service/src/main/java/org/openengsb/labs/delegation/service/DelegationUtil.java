@@ -28,7 +28,7 @@ public final class DelegationUtil {
      * registers a ClassProvider service that is able to load all classes contained in the given bundle
      */
     public static void registerClassProviderForBundle(Bundle bundle) {
-        BundleHandler.injectBundle(bundle);
+        BundleHandler.injectIntoBundle(bundle);
     }
 
     /**
@@ -36,7 +36,7 @@ public final class DelegationUtil {
      * the given bundle
      */
     public static void registerClassProviderForBundle(Bundle bundle, String delegationContext) {
-        BundleHandler.injectBundle(bundle, delegationContext);
+        BundleHandler.injectIntoBundle(bundle, delegationContext);
     }
 
     /**
@@ -48,7 +48,7 @@ public final class DelegationUtil {
      * Example: my.bundle.mainpackage, my.bundle.otherpackage.*
      */
     public static void registerClassProviderForBundle(Bundle bundle, Collection<String> classFilters) {
-        BundleHandler.injectBundle(bundle, classFilters);
+        BundleHandler.injectIntoBundle(bundle, classFilters);
     }
 
     /**
@@ -61,7 +61,7 @@ public final class DelegationUtil {
      */
     public static void registerClassProviderForBundle(Bundle bundle, Collection<String> classFilters,
             String delegationContext) {
-        BundleHandler.injectBundle(bundle, classFilters, delegationContext);
+        BundleHandler.injectIntoBundle(bundle, classFilters, delegationContext);
     }
 
     private DelegationUtil() {

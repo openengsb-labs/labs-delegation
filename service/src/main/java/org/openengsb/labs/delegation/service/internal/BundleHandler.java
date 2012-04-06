@@ -34,23 +34,23 @@ public class BundleHandler {
         bundleHandler.handle();
     }
 
-    public static void injectBundle(Bundle bundle, String context) {
+    public static void injectIntoBundle(Bundle bundle, String context) {
         BundleHandler bundleHandler = new BundleHandler(bundle);
         doRegisterClassProviderForBundle(bundle, bundleHandler.getAllClassesInBundle(), context);
     }
 
-    public static void injectBundle(Bundle bundle) {
-        injectBundle(bundle, "");
+    public static void injectIntoBundle(Bundle bundle) {
+        injectIntoBundle(bundle, "");
     }
 
-    public static void injectBundle(Bundle bundle, Collection<String> classFilters, String context) {
+    public static void injectIntoBundle(Bundle bundle, Collection<String> classFilters, String context) {
         BundleHandler bundleHandler = new BundleHandler(bundle);
         Set<String> matchingClasses = bundleHandler.getMatchingClasses(classFilters);
         doRegisterClassProviderForBundle(bundle, matchingClasses, context);
     }
 
-    public static void injectBundle(Bundle bundle, Collection<String> classFilters) {
-        injectBundle(bundle, classFilters, "");
+    public static void injectIntoBundle(Bundle bundle, Collection<String> classFilters) {
+        injectIntoBundle(bundle, classFilters, "");
     }
 
     private BundleHandler(Bundle bundle) {

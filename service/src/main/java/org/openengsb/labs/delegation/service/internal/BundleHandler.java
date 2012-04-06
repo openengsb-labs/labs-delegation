@@ -3,6 +3,7 @@ package org.openengsb.labs.delegation.service.internal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
 import org.openengsb.labs.delegation.service.ClassProvider;
 import org.openengsb.labs.delegation.service.Constants;
 import org.openengsb.labs.delegation.service.Provide;
+import org.openengsb.labs.delegation.service.ResourceProvider;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +42,8 @@ public class BundleHandler {
     }
 
     public static void injectIntoBundle(Bundle bundle) {
-        injectIntoBundle(bundle, "");
+        BundleHandler bundleHandler = new BundleHandler(bundle);
+        doRegisterClassProviderForBundle(bundle, bundleHandler.getAllClassesInBundle());
     }
 
     public static void injectIntoBundle(Bundle bundle, Collection<String> classFilters, String context) {
@@ -50,7 +53,22 @@ public class BundleHandler {
     }
 
     public static void injectIntoBundle(Bundle bundle, Collection<String> classFilters) {
-        injectIntoBundle(bundle, classFilters, "");
+        BundleHandler bundleHandler = new BundleHandler(bundle);
+        Set<String> matchingClasses = bundleHandler.getMatchingClasses(classFilters);
+        doRegisterClassProviderForBundle(bundle, matchingClasses);
+    }
+
+    public static void injectResourceProviderIntoBundle(Bundle bundle, Collection<String> fileFilters) {
+        BundleHandler bundleHandler = new BundleHandler(bundle);
+        Set<String> matchingResources = bundleHandler.getMatchingResources(fileFilters);
+        doRegisterResourceProvider(bundle, matchingResources);
+    }
+
+    public static void injectResourceProviderIntoBundle(Bundle bundle, Collection<String> fileFilters,
+            String delegationContext) {
+        BundleHandler bundleHandler = new BundleHandler(bundle);
+        Set<String> matchingResources = bundleHandler.getMatchingResources(fileFilters);
+        doRegisterResourceProvider(bundle, matchingResources, delegationContext);
     }
 
     private BundleHandler(Bundle bundle) {
@@ -171,6 +189,25 @@ public class BundleHandler {
         b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
         return service;
     }
+    
+
+    private static void doRegisterResourceProvider(Bundle bundle, Set<String> matchingResources) {
+        ResourceProvider service = new ResourceProviderImpl(bundle, matchingResources);
+        Dictionary<String, Object> properties = new Hashtable<String, Object>();
+        properties.put(Constants.PROVIDED_RESOURCES_KEY, matchingResources);
+        properties.put(Constants.CLASS_VERSION, bundle.getVersion().toString());
+        bundle.getBundleContext().registerService(ResourceProvider.class.getName(), service, properties);
+    }
+
+    private static void doRegisterResourceProvider(Bundle bundle, Set<String> matchingResources,
+            String delegationContext) {
+        ResourceProvider service = new ResourceProviderImpl(bundle, matchingResources);
+        Dictionary<String, Object> properties = new Hashtable<String, Object>();
+        properties.put(Constants.PROVIDED_RESOURCES_KEY, matchingResources);
+        properties.put(Constants.CLASS_VERSION, bundle.getVersion().toString());
+        properties.put(Constants.DELEGATION_CONTEXT, delegationContext);
+        bundle.getBundleContext().registerService(ResourceProvider.class.getName(), service, properties);
+    }
 
     private Set<String> getMatchingClasses(Collection<String> classFilters) {
         Set<String> matchingClasses = new HashSet<String>();
@@ -184,6 +221,22 @@ public class BundleHandler {
             }
         }
         return matchingClasses;
+    }
+
+    private Set<String> getMatchingResources(Collection<String> fileFilters) {
+        Set<String> matchingFiles = new HashSet<String>();
+        for (String p : fileFilters) {
+            
+            int lastIndexOf = p.lastIndexOf("/");
+            String path = "/" + p.substring(0, lastIndexOf);
+            String pattern = p.substring(lastIndexOf+1);
+            @SuppressWarnings("unchecked")
+            Enumeration<URL> resources = bundle.findEntries(path, pattern, true);
+            while (resources.hasMoreElements()) {
+                matchingFiles.add(resources.nextElement().getPath().replaceFirst("^/", ""));
+            }
+        }
+        return matchingFiles;
     }
 
     private Set<String> getAllClassesInBundle() {
@@ -224,4 +277,5 @@ public class BundleHandler {
         }
         return discoveredClasses;
     }
+
 }

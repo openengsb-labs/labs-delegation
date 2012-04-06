@@ -29,7 +29,12 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
@@ -43,6 +48,8 @@ import org.openengsb.labs.delegation.itests.bundles.provider.TestBean;
 import org.openengsb.labs.delegation.itests.bundles.provider.TestService;
 import org.openengsb.labs.delegation.itests.bundles.provider.internal.TestProvider;
 import org.openengsb.labs.delegation.service.ClassProvider;
+import org.openengsb.labs.delegation.service.DelegationUtil;
+import org.openengsb.labs.delegation.service.ResourceProvider;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.ExamReactorStrategy;
@@ -276,6 +283,21 @@ public class DelegationTest {
         assertThat(provider1, not(nullValue()));
         assertThat(provider2, not(nullValue()));
         assertThat(provider1, not(equalTo(provider2)));
+    }
+
+    @Test
+    public void provideResourcesViaBundleHeader_shouldOnlyProvideSpecifiedResources() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        providerTinyBundle.add("resources/test.xml", new ByteArrayInputStream("<test></test>".getBytes()));
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+        DelegationUtil.registerResourceProviderForBundle(providerBundle, Arrays.asList("resources/*"));
+        ResourceProvider provider = getOsgiService(ResourceProvider.class);
+        URL loadResource = provider.loadResource("resources/test.xml");
+        assertThat(loadResource, not(nullValue()));
+        String readLine = new BufferedReader(new InputStreamReader(loadResource.openStream())).readLine();
+        assertThat(readLine, is("<test></test>"));
     }
 
     private TinyBundle createProviderBundle() {

@@ -64,6 +64,29 @@ public final class DelegationUtil {
         BundleHandler.injectIntoBundle(bundle, classFilters, delegationContext);
     }
 
+    /**
+     * registers a ResourceProvider service that is able to load all resources matching any of the given filters.
+     * 
+     * The filters is a list of file-path patterns. The list may use wildcards.
+     * 
+     * Example: OSGI-INF/blueprint/context.xml, resources/*
+     */
+    public static void registerResourceProviderForBundle(Bundle bundle, Collection<String> fileFilters) {
+        BundleHandler.injectResourceProviderIntoBundle(bundle, fileFilters);
+    }
+
+    /**
+     * registers a ResourceProvider service with the given delegationContext that is able to load all resources matching any of the given filters.
+     * 
+     * The filters is a list of file-path patterns. The list may use wildcards.
+     * 
+     * Example: OSGI-INF/blueprint/context.xml, resources/*
+     */
+    public static void registerResourceProviderForBundle(Bundle bundle, Collection<String> fileFilters,
+            String delegationContext) {
+        BundleHandler.injectResourceProviderIntoBundle(bundle, fileFilters, delegationContext);
+    }
+
     private DelegationUtil() {
     }
 

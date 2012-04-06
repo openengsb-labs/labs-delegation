@@ -28,6 +28,8 @@ public final class Constants {
     public static final String DELEGATION_CONTEXT = "delegationContext";
     public static final String DELEGATION_ANNOTATIONS = "Delegation-Annotations";
     public static final String CLASS_VERSION = "classVersion";
+    public static final String PROVIDED_RESOURCES = "Provided-Resources";
+    public static final String PROVIDED_RESOURCES_KEY = "providedResources";
 
     private Constants() {
     }

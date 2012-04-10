@@ -21,6 +21,10 @@ import java.util.Collection;
 
 import org.openengsb.labs.delegation.service.internal.BundleHandler;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.Version;
 
 public final class DelegationUtil {
 
@@ -76,7 +80,8 @@ public final class DelegationUtil {
     }
 
     /**
-     * registers a ResourceProvider service with the given delegationContext that is able to load all resources matching any of the given filters.
+     * registers a ResourceProvider service with the given delegationContext that is able to load all resources matching
+     * any of the given filters.
      * 
      * The filters is a list of file-path patterns. The list may use wildcards.
      * 
@@ -85,6 +90,80 @@ public final class DelegationUtil {
     public static void registerResourceProviderForBundle(Bundle bundle, Collection<String> fileFilters,
             String delegationContext) {
         BundleHandler.injectResourceProviderIntoBundle(bundle, fileFilters, delegationContext);
+    }
+
+    /**
+     * create an OSGi-service filter matching {@link ClassProvider}s for the given context and providing a class with
+     * the given name
+     *
+     * @throws IllegalArgumentException when any of the arguments contain illegal characters and cause the filter to be
+     *         invalid
+     */
+    public static Filter createClassProviderFilter(String context, String classname) {
+        String filterString = String.format("(&(%s=%s)(%s=%s)(%s=%s))",
+            org.osgi.framework.Constants.OBJECTCLASS, ClassProvider.class.getName(),
+            Constants.DELEGATION_CONTEXT, context,
+            Constants.PROVIDED_CLASSES_KEY, classname);
+        try {
+            return FrameworkUtil.createFilter(filterString);
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalArgumentException("context or classname contained illegal characters", e);
+        }
+    }
+
+    /**
+     * create an OSGi-service filter matching {@link ClassProvider}s providing a class with the given name
+     *
+     * @throws IllegalArgumentException when any of the arguments contain illegal characters and cause the filter to be
+     *         invalid
+     */
+    public static Filter createClassProviderFilter(String classname) {
+        String filterString = String.format("(&(%s=%s)(%s=%s))",
+            org.osgi.framework.Constants.OBJECTCLASS, ClassProvider.class.getName(),
+            Constants.PROVIDED_CLASSES_KEY, classname);
+        try {
+            return FrameworkUtil.createFilter(filterString);
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalArgumentException("classname contained illegal characters", e);
+        }
+    }
+
+    /**
+     * create an OSGi-service filter matching {@link ClassProvider}s for the given context and providing a class with
+     * the given name and version
+     *
+     * @throws IllegalArgumentException when any of the arguments contain illegal characters and cause the filter to be
+     *         invalid
+     */
+    public static Filter createClassProviderFilter(String context, String classname, Version version) {
+        String filterString = String.format("(&(%s=%s)(%s=%s)(%s=%s)(%s=%s))",
+            org.osgi.framework.Constants.OBJECTCLASS, ClassProvider.class.getName(),
+            Constants.DELEGATION_CONTEXT, context,
+            Constants.PROVIDED_CLASSES_KEY, classname,
+            Constants.CLASS_VERSION, version);
+        try {
+            return FrameworkUtil.createFilter(filterString);
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalArgumentException("context or classname contained illegal characters", e);
+        }
+    }
+
+    /**
+     * create an OSGi-service filter matching {@link ClassProvider}s providing a class with the given name and version
+     *
+     * @throws IllegalArgumentException when any of the arguments contain illegal characters and cause the filter to be
+     *         invalid
+     */
+    public static Filter createClassProviderFilter(String classname, Version version) {
+        String filterString = String.format("(&(%s=%s)(%s=%s)(%s=%s))",
+            org.osgi.framework.Constants.OBJECTCLASS, ClassProvider.class.getName(),
+            Constants.PROVIDED_CLASSES_KEY, classname,
+            Constants.CLASS_VERSION, version.toString());
+        try {
+            return FrameworkUtil.createFilter(filterString);
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalArgumentException("classname contained illegal characters", e);
+        }
     }
 
     private DelegationUtil() {

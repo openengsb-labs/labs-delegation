@@ -18,6 +18,7 @@
 package org.openengsb.labs.delegation.service.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,14 +34,19 @@ import org.slf4j.LoggerFactory;
 public class ClassProviderImpl implements ClassProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassProviderImpl.class);
-    private Set<String> classes = new HashSet<String>();
+    private Set<String> classes;
     private Collection<Class<?>> loadedClasses;
 
     protected Bundle bundle;
 
-    public ClassProviderImpl(Bundle bundle, Set<String> classes) {
+    public ClassProviderImpl(Bundle bundle, Collection<String> classes) {
         this.bundle = bundle;
-        this.classes = classes;
+        this.classes = new HashSet<String>(classes);
+    }
+
+    public ClassProviderImpl(Bundle bundle, String... classes) {
+        this.bundle = bundle;
+        this.classes = new HashSet<String>(Arrays.asList(classes));
     }
 
     @Override
@@ -57,7 +63,7 @@ public class ClassProviderImpl implements ClassProvider {
         if (loadedClasses == null) {
             loadAllClasses();
         }
-        return loadedClasses;
+        return new HashSet<Class<?>>(loadedClasses);
     }
 
     private void loadAllClasses() {

@@ -23,6 +23,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -310,10 +311,13 @@ public class DelegationTest {
         ResourceProvider provider = getOsgiService(ResourceProvider.class);
         URL loadResource = provider.loadResource("resources/test.xml");
         assertThat(loadResource, not(nullValue()));
+        Collection<URL> resourceList = provider.listResources();
+        assertThat(resourceList, hasItem(loadResource));
+        assertThat(resourceList.size(), is(1));
         String readLine = new BufferedReader(new InputStreamReader(loadResource.openStream())).readLine();
         assertThat(readLine, is("<test></test>"));
     }
-
+    
     private TinyBundle createProviderBundle() {
         TinyBundle providerTinyBundle =
             bundle()

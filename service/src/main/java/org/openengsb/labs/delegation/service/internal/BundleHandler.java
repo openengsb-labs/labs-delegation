@@ -25,60 +25,64 @@ public class BundleHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BundleHandler.class);
 
+    private static Map<Bundle, BundleHandler> bundleHandlers = new HashMap<Bundle, BundleHandler>();
+
     private Bundle bundle;
     private Map<String, Set<String>> providedClassesMap = new HashMap<String, Set<String>>();
     private Map<String, Set<String>> providedResourcesMap = new HashMap<String, Set<String>>();
 
     private Set<String> bundleClasses;
 
+    public static BundleHandler getInstance(Bundle bundle) {
+        if (!bundleHandlers.containsKey(bundle)) {
+            bundleHandlers.put(bundle, new BundleHandler(bundle));
+        }
+        return bundleHandlers.get(bundle);
+    }
+
     public static void processBundle(Bundle bundle) {
-        BundleHandler bundleHandler = new BundleHandler(bundle);
+        BundleHandler bundleHandler = getInstance(bundle);
         bundleHandler.scanBundle();
         bundleHandler.handle();
     }
 
     public static void injectIntoBundle(Bundle bundle, String context) {
-        BundleHandler bundleHandler = new BundleHandler(bundle);
+        BundleHandler bundleHandler = getInstance(bundle);
         doRegisterClassProviderForBundle(bundle, bundleHandler.getAllClassesInBundle(), context);
     }
 
     public static void injectIntoBundle(Bundle bundle) {
-        BundleHandler bundleHandler = new BundleHandler(bundle);
+        BundleHandler bundleHandler = getInstance(bundle);
         doRegisterClassProviderForBundle(bundle, bundleHandler.getAllClassesInBundle());
     }
 
     public static void injectIntoBundle(Bundle bundle, Collection<String> classFilters, String context) {
-        BundleHandler bundleHandler = new BundleHandler(bundle);
+        BundleHandler bundleHandler = getInstance(bundle);
         Set<String> matchingClasses = bundleHandler.getMatchingClasses(classFilters);
         doRegisterClassProviderForBundle(bundle, matchingClasses, context);
     }
 
     public static void injectIntoBundle(Bundle bundle, Collection<String> classFilters) {
-        BundleHandler bundleHandler = new BundleHandler(bundle);
+        BundleHandler bundleHandler = getInstance(bundle);
         Set<String> matchingClasses = bundleHandler.getMatchingClasses(classFilters);
         doRegisterClassProviderForBundle(bundle, matchingClasses);
     }
 
     public static void injectResourceProviderIntoBundle(Bundle bundle, Collection<String> fileFilters) {
-        BundleHandler bundleHandler = new BundleHandler(bundle);
+        BundleHandler bundleHandler = getInstance(bundle);
         Set<String> matchingResources = bundleHandler.getMatchingResources(fileFilters);
         doRegisterResourceProvider(bundle, matchingResources);
     }
 
     public static void injectResourceProviderIntoBundle(Bundle bundle, Collection<String> fileFilters,
             String delegationContext) {
-        BundleHandler bundleHandler = new BundleHandler(bundle);
+        BundleHandler bundleHandler = getInstance(bundle);
         Set<String> matchingResources = bundleHandler.getMatchingResources(fileFilters);
         doRegisterResourceProvider(bundle, matchingResources, delegationContext);
     }
 
     private BundleHandler(Bundle bundle) {
         this.bundle = bundle;
-    }
-
-    private BundleHandler(Bundle bundle, Map<String, Set<String>> providedClassesMap) {
-        this.bundle = bundle;
-        this.providedClassesMap = providedClassesMap;
     }
 
     public void scanBundle() {

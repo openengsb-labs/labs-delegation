@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.openengsb.labs.delegation.service.Provide;
 
-@Provide(context = { "foo", "bar" })
+@Provide(context = { "foo", "bar" }, alias = "mtestbean")
 public class TestBean implements Serializable {
 
     private static final long serialVersionUID = 8283996056794425281L;

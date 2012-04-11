@@ -298,7 +298,7 @@ public class DelegationTest {
         String readLine = new BufferedReader(new InputStreamReader(loadResource.openStream())).readLine();
         assertThat(readLine, is("<test></test>"));
     }
-    
+
     @Test
     public void provideResourcesViaBundleHeader_shouldOnlyProvideSpecifiedResources() throws Exception {
         TinyBundle providerTinyBundle = createProviderBundle();
@@ -317,7 +317,20 @@ public class DelegationTest {
         String readLine = new BufferedReader(new InputStreamReader(loadResource.openStream())).readLine();
         assertThat(readLine, is("<test></test>"));
     }
-    
+
+    @Test
+    public void provideBundleWithAnnotations_shouldProvideClassesAsAlias() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS, "true");
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+        ClassProvider provider =
+            getOsgiService(ClassProvider.class, String.format("(%s=%s)",
+                org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, "mtestbean"));
+        provider.loadClass(TestBean.class.getName());
+    }
+
     private TinyBundle createProviderBundle() {
         TinyBundle providerTinyBundle =
             bundle()

@@ -12,5 +12,6 @@ import java.lang.annotation.Target;
 public @interface Provide {
 
     String[] context() default "";
+    String[] alias() default "";
 
 }

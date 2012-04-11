@@ -30,6 +30,7 @@ public class BundleHandler {
     private Bundle bundle;
     private Map<String, Set<String>> providedClassesMap = new HashMap<String, Set<String>>();
     private Map<String, Set<String>> providedResourcesMap = new HashMap<String, Set<String>>();
+    private Map<String, String> aliasesMap = new HashMap<String, String>();
 
     private Set<String> bundleClasses;
 
@@ -99,10 +100,10 @@ public class BundleHandler {
         LOGGER.info("injecting ClassProvider-Service into bundle {}.", bundle.getSymbolicName());
         if (providedClassesMap.containsKey("")) {
             Set<String> allClasses = providedClassesMap.remove("");
-            doRegisterClassProviderForBundle(bundle, allClasses);
+            doRegisterClassProviderForBundle(bundle, allClasses, aliasesMap);
         }
         for (Map.Entry<String, Set<String>> entry : providedClassesMap.entrySet()) {
-            doRegisterClassProviderForBundle(bundle, entry.getValue(), entry.getKey());
+            doRegisterClassProviderForBundle(bundle, entry.getValue(), entry.getKey(), aliasesMap);
         }
         if (providedResourcesMap.containsKey("")) {
             Set<String> allResources = providedResourcesMap.remove("");
@@ -133,7 +134,17 @@ public class BundleHandler {
             for (String context : provide.context()) {
                 addClassToContext(context, classname);
             }
+            for (String alias : provide.alias()) {
+                addAliasForClass(classname, alias);
+            }
         }
+    }
+
+    private void addAliasForClass(String classname, String alias) {
+        if ("".equals(alias)) {
+            return;
+        }
+        aliasesMap.put(alias, classname);
     }
 
     private void analyzeProvidesHeadersWithContext() {
@@ -232,10 +243,41 @@ public class BundleHandler {
     }
 
     private static ClassProvider doRegisterClassProviderForBundle(Bundle b, Set<String> classes,
+            Map<String, String> aliases) {
+        if (aliases == null || aliases.isEmpty()) {
+            return doRegisterClassProviderForBundle(b, classes);
+        }
+        ClassProvider service = new ClassProviderWithAliases(b, classes, aliases);
+        Hashtable<String, Object> properties = new Hashtable<String, Object>();
+        Set<String> allnames = new HashSet<String>(classes);
+        allnames.addAll(aliases.keySet());
+        properties.put(Constants.PROVIDED_CLASSES_KEY, allnames);
+        properties.put(Constants.CLASS_VERSION, b.getVersion().toString());
+        b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
+        return service;
+    }
+
+    private static ClassProvider doRegisterClassProviderForBundle(Bundle b, Set<String> classes,
             String delegationContext) {
         ClassProvider service = new ClassProviderImpl(b, classes);
         Hashtable<String, Object> properties = new Hashtable<String, Object>();
         properties.put(Constants.PROVIDED_CLASSES_KEY, classes);
+        properties.put(Constants.CLASS_VERSION, b.getVersion().toString());
+        properties.put(Constants.DELEGATION_CONTEXT, delegationContext);
+        b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
+        return service;
+    }
+
+    private static ClassProvider doRegisterClassProviderForBundle(Bundle b, Set<String> classes,
+            String delegationContext, Map<String, String> aliases) {
+        if (aliases == null || aliases.isEmpty()) {
+            return doRegisterClassProviderForBundle(b, classes, delegationContext);
+        }
+        ClassProvider service = new ClassProviderWithAliases(b, classes, aliases);
+        Hashtable<String, Object> properties = new Hashtable<String, Object>();
+        Set<String> allnames = new HashSet<String>(classes);
+        allnames.addAll(aliases.keySet());
+        properties.put(Constants.PROVIDED_CLASSES_KEY, allnames);
         properties.put(Constants.CLASS_VERSION, b.getVersion().toString());
         properties.put(Constants.DELEGATION_CONTEXT, delegationContext);
         b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);

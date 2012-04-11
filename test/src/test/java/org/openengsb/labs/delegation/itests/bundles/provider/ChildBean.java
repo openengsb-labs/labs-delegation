@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.openengsb.labs.delegation.service.Provide;
 
-@Provide("bar")
+@Provide(context = "bar")
 public class ChildBean implements Serializable {
 
     private static final long serialVersionUID = 1590509354350141448L;

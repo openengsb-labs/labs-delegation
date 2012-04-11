@@ -130,7 +130,7 @@ public class BundleHandler {
             if (provide == null) {
                 continue;
             }
-            for (String context : provide.value()) {
+            for (String context : provide.context()) {
                 addClassToContext(context, classname);
             }
         }

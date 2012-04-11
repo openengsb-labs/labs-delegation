@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Provide {
 
-    String[] value() default "";
+    String[] context() default "";
 
 }

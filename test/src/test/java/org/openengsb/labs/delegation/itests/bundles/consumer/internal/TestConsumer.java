@@ -55,7 +55,8 @@ public class TestConsumer implements BundleActivator {
             }
         }
 
-        DelegationClassLoader delegationClassLoader = new DelegationClassLoader(context);
+        DelegationClassLoader delegationClassLoader = new DelegationClassLoader(context, (ClassLoader) null);
+        delegationClassLoader.setTimeout(1000L);
         Class<?> loadedClass =
             delegationClassLoader.loadClass("org.openengsb.labs.delegation.itests.bundles.provider.TestService");
         LOGGER.info("found class, looking for doSomething-method");

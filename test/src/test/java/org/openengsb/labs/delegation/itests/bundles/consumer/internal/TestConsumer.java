@@ -21,12 +21,11 @@ import java.lang.reflect.Method;
 import java.util.Hashtable;
 import java.util.concurrent.Callable;
 
-import org.openengsb.labs.delegation.service.ClassProvider;
+import org.openengsb.labs.delegation.service.DelegationClassLoader;
 import org.openengsb.labs.delegation.service.DelegationUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,24 +55,14 @@ public class TestConsumer implements BundleActivator {
             }
         }
 
-        ServiceReference[] allServiceReferences = context.getAllServiceReferences(ClassProvider.class.getName(), null);
-        if (allServiceReferences == null) {
-            System.err.println("args, no refs");
-        }
-        for (ServiceReference r : allServiceReferences) {
-            ClassProvider service = (ClassProvider) context.getService(r);
-            Class<?> cls;
-            try {
-                cls = service.loadClass("org.openengsb.labs.delegation.itests.bundles.provider.TestService");
-            } catch (Exception e) {
-                LOGGER.info("cnfe", e);
-                continue;
-            }
-            ResultTask resultTask = new ResultTask(cls.getMethod("doSomething"));
-            Hashtable<String, Object> properties = new Hashtable<String, Object>();
-            properties.put("resultProvider", "test");
-            context.registerService(Callable.class.getName(), resultTask, properties);
-        }
+        DelegationClassLoader delegationClassLoader = new DelegationClassLoader(context);
+        Class<?> loadedClass =
+            delegationClassLoader.loadClass("org.openengsb.labs.delegation.itests.bundles.provider.TestService");
+        LOGGER.info("found class, looking for doSomething-method");
+        ResultTask resultTask = new ResultTask(loadedClass.getMethod("doSomething"));
+        Hashtable<String, Object> properties = new Hashtable<String, Object>();
+        properties.put("resultProvider", "test");
+        context.registerService(Callable.class.getName(), resultTask, properties);
     }
 
     @Override

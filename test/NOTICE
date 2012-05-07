@@ -1,0 +1,73 @@
+Licensed to the Austrian Association for Software Tool Integration (AASTI)
+under one or more contributor license agreements. See the NOTICE file
+distributed with this work for additional information regarding copyright
+ownership. The AASTI licenses this file to you under the Apache License,
+Version 2.0 (the "License"); you may not use this file except in compliance
+with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+This project includes:
+  Aether :: API under Eclipse Public License, Version 1.0 or Apache License, Version 2.0
+  Aether :: Connector :: Wagon under Eclipse Public License, Version 1.0 or Apache License, Version 2.0
+  Aether :: Implementation under Eclipse Public License, Version 1.0 or Apache License, Version 2.0
+  Aether :: SPI under Eclipse Public License, Version 1.0 or Apache License, Version 2.0
+  Aether :: Utilities under Eclipse Public License, Version 1.0 or Apache License, Version 2.0
+  Apache Felix Framework under The Apache Software License, Version 2.0
+  Apache Geronimo JSR-330 Spec API under The Apache Software License, Version 2.0
+  Apache Log4j under The Apache Software License, Version 2.0
+  Apache XBean :: Reflect under The Apache Software License, Version 2.0
+  aQute Bundle Tool Library under All files contained in this JAR are licensed under the Apache
+         2.0 license, unless noted differently in their source (see
+         swing2swt).
+  ASM Core under Apache License, Version 2.0
+  Codec under Apache License, Version 2.0
+  Google Collections Library under The Apache Software License, Version 2.0
+  Guava (Google Common Libraries) under The Apache Software License, Version 2.0
+  Hamcrest All under BSD style
+  Hamcrest Core under BSD style
+  HttpClient under Apache License
+  JUnit under Common Public License Version 1.0
+  Logging under The Apache Software License, Version 2.0
+  Maven Aether Provider under The Apache Software License, Version 2.0
+  Maven Model under The Apache Software License, Version 2.0
+  Maven Model Builder under The Apache Software License, Version 2.0
+  Maven Repository Metadata Model under The Apache Software License, Version 2.0
+  Maven Wagon API under The Apache Software License, Version 2.0
+  Maven Wagon File Provider under The Apache Software License, Version 2.0
+  Maven Wagon HTTP Shared Library under The Apache Software License, Version 2.0
+  Maven Wagon Lightweight HTTP Provider under The Apache Software License, Version 2.0
+  OpenEngSB Labs :: Delegation Service under Apache 2
+  OpenEngSB Labs :: Delegation Test under Apache 2
+  OPS4J Base - IO under ALv2
+  OPS4J Base - Lang under ALv2
+  OPS4J Base - Monitors under ALv2
+  OPS4J Base - Net under ALv2
+  OPS4J Base - Store under ALv2
+  OPS4J Pax Exam - API under Apache License, Version 2.0
+  OPS4J Pax Exam - Driver JUnit4 under Apache License, Version 2.0
+  OPS4J Pax Exam - Links for Maven under Apache License, Version 2.0
+  OPS4J Pax Exam - TestContainer Native under Apache License, Version 2.0
+  OPS4J Pax Exam - UI Low Level SPI under Apache License, Version 2.0
+  OPS4J Pax Swissbox :: Lifecycle under ALv2
+  OPS4J Pax Swissbox :: OSGi Core under ALv2
+  OPS4J Pax Tinybundles under ALv2
+  OPS4J Pax Url - aether: under ALv2
+  OPS4J Pax Url - classpath: under ALv2
+  OPS4J Pax Url - link: under ALv2
+  org.osgi.compendium under Apache License, Version 2.0
+  org.osgi.core under Apache License, Version 2.0
+  Plexus :: Component Annotations under The Apache Software License, Version 2.0
+  Plexus :: Default Container under The Apache Software License, Version 2.0
+  Plexus Classworlds under The Apache Software License, Version 2.0
+  Plexus Common Utilities under The Apache Software License, Version 2.0
+  Plexus Interpolation API under The Apache Software License, Version 2.0
+  SLF4J API Module under MIT License
+  SLF4J LOG4J-12 Binding under MIT License
+

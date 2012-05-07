@@ -24,13 +24,13 @@
   <parent>
     <groupId>org.openengsb.labs.delegation</groupId>
     <artifactId>delegation-parent</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
 
   <groupId>org.openengsb.labs.delegation</groupId>
   <artifactId>org.openengsb.labs.delegation.service</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>OpenEngSB Labs :: Delegation Service</name>

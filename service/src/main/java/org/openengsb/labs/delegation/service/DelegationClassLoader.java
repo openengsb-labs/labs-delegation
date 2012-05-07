@@ -19,7 +19,7 @@ public class DelegationClassLoader extends ClassLoader {
         if (delegationContext != null) {
             filterString = String.format("(&%s(%s=%s))",
                 filterString,
-                Constants.DELEGATION_CONTEXT, delegationContext);
+                Constants.DELEGATION_CONTEXT_KEY, delegationContext);
         }
         Filter filter;
         try {

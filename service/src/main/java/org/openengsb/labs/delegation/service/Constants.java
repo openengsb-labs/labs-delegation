@@ -23,12 +23,12 @@ public final class Constants {
      * attribute name used in manifest-headers for declaring which classes should be provided using a
      * "ClassProvider"-service
      */
-    public static final String PROVIDED_CLASSES = "Provided-Classes";
+    public static final String PROVIDED_CLASSES_HEADER = "Provided-Classes";
     public static final String PROVIDED_CLASSES_KEY = "providedClasses";
-    public static final String DELEGATION_CONTEXT = "delegationContext";
-    public static final String DELEGATION_ANNOTATIONS = "Delegation-Annotations";
-    public static final String CLASS_VERSION = "classVersion";
-    public static final String PROVIDED_RESOURCES = "Provided-Resources";
+    public static final String DELEGATION_CONTEXT_KEY = "delegationContext";
+    public static final String DELEGATION_ANNOTATIONS_HEADER = "Delegation-Annotations";
+    public static final String CLASS_VERSION_KEY = "classVersion";
+    public static final String PROVIDED_RESOURCES_HEADER = "Provided-Resources";
     public static final String PROVIDED_RESOURCES_KEY = "providedResources";
 
     private Constants() {

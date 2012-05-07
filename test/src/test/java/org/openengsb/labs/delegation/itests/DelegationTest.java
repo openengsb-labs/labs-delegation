@@ -124,7 +124,7 @@ public class DelegationTest {
     @Test
     public void provideBundleHeader_shouldOnlyProvideSpecifiedClasses() throws Exception {
         TinyBundle providerTinyBundle = createProviderBundle();
-        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES,
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_HEADER,
             TestBean.class.getName());
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
@@ -142,7 +142,7 @@ public class DelegationTest {
     @Test
     public void provideBundleHeaderAndListClasses_shouldProvideSpecifiedClassesInList() throws Exception {
         TinyBundle providerTinyBundle = createProviderBundle();
-        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES,
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_HEADER,
             TestBean.class.getName());
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
@@ -160,7 +160,7 @@ public class DelegationTest {
     @Test
     public void provideBundleHeader_shouldProvideServiceWithProvidedClassesInProperties() throws Exception {
         TinyBundle providerTinyBundle = createProviderBundle();
-        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES,
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_HEADER,
             TestBean.class.getName());
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
@@ -180,7 +180,7 @@ public class DelegationTest {
     @Test
     public void provideBundleHeaderWithContext_shouldOnlyProvideClassInContext() throws Exception {
         TinyBundle providerTinyBundle = createProviderBundle();
-        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES + "-foo",
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_HEADER + "-foo",
             TestBean.class.getName());
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
@@ -188,7 +188,7 @@ public class DelegationTest {
         ClassProvider provider =
             getOsgiService(ClassProvider.class, String.format("(&(%s=%s)(%s=%s))",
                 org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, TestBean.class.getName(),
-                org.openengsb.labs.delegation.service.Constants.DELEGATION_CONTEXT, "foo"));
+                org.openengsb.labs.delegation.service.Constants.DELEGATION_CONTEXT_KEY, "foo"));
         provider.loadClass(TestBean.class.getName());
         try {
             provider.loadClass(ChildBean.class.getName());
@@ -201,7 +201,7 @@ public class DelegationTest {
     @Test
     public void provideBundleWithAnnotations_shouldProvideClasses() throws Exception {
         TinyBundle providerTinyBundle = createProviderBundle();
-        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS, "true");
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS_HEADER, "true");
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
         providerBundle.start();
@@ -214,14 +214,14 @@ public class DelegationTest {
     @Test
     public void provideBundleWithAnnotationsInContext_shouldProvideClassesInContext() throws Exception {
         TinyBundle providerTinyBundle = createProviderBundle();
-        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS, "true");
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS_HEADER, "true");
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
         providerBundle.start();
         ClassProvider provider =
             getOsgiService(ClassProvider.class, String.format("(&(%s=%s)(%s=%s))",
                 org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, TestBean.class.getName(),
-                org.openengsb.labs.delegation.service.Constants.DELEGATION_CONTEXT, "foo"));
+                org.openengsb.labs.delegation.service.Constants.DELEGATION_CONTEXT_KEY, "foo"));
         provider.loadClass(TestBean.class.getName());
         try {
             provider.loadClass(ChildBean.class.getName());
@@ -246,7 +246,7 @@ public class DelegationTest {
         ServiceReference serviceReference = bundleContext.getServiceReference(ClassProvider.class.getName());
         assertThat(serviceReference, not(nullValue()));
 
-        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES,
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_HEADER,
             TestService.class.getName());
         providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
@@ -259,25 +259,25 @@ public class DelegationTest {
     @Test
     public void installBundleInTwoVersions_shouldCreateSeparateClassProviders() throws Exception {
         TinyBundle providerTinyBundle = createProviderBundle();
-        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS, "true");
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS_HEADER, "true");
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
         providerBundle.start();
 
         TinyBundle providerTinyBundle2 = createProviderBundle();
         providerTinyBundle2.set(Constants.BUNDLE_VERSION, "1.0.1");
-        providerTinyBundle2.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS, "true");
+        providerTinyBundle2.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS_HEADER, "true");
         Bundle providerBundle2 =
             bundleContext.installBundle("test://testlocation/test.provider2.jar", providerTinyBundle2.build());
         providerBundle2.start();
 
         ClassProvider provider1 = getOsgiService(ClassProvider.class, String.format("(&(%s=%s)(%s=%s))",
             org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, TestBean.class.getName(),
-            org.openengsb.labs.delegation.service.Constants.CLASS_VERSION, "1.0.0"));
+            org.openengsb.labs.delegation.service.Constants.CLASS_VERSION_KEY, "1.0.0"));
 
         ClassProvider provider2 = getOsgiService(ClassProvider.class, String.format("(&(%s=%s)(%s=%s))",
             org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, TestBean.class.getName(),
-            org.openengsb.labs.delegation.service.Constants.CLASS_VERSION, "1.0.1"));
+            org.openengsb.labs.delegation.service.Constants.CLASS_VERSION_KEY, "1.0.1"));
 
         assertThat(provider1, not(nullValue()));
         assertThat(provider2, not(nullValue()));
@@ -303,7 +303,7 @@ public class DelegationTest {
     public void provideResourcesViaBundleHeader_shouldOnlyProvideSpecifiedResources() throws Exception {
         TinyBundle providerTinyBundle = createProviderBundle();
         providerTinyBundle.add("resources/test.xml", new ByteArrayInputStream("<test></test>".getBytes()));
-        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_RESOURCES,
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_RESOURCES_HEADER,
             "resources/test.xml");
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
@@ -321,7 +321,7 @@ public class DelegationTest {
     @Test
     public void provideBundleWithAnnotations_shouldProvideClassesAsAlias() throws Exception {
         TinyBundle providerTinyBundle = createProviderBundle();
-        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS, "true");
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.DELEGATION_ANNOTATIONS_HEADER, "true");
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
         providerBundle.start();

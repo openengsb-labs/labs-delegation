@@ -115,7 +115,7 @@ public class BundleHandler {
     }
 
     private void analyzeAnnotations() {
-        if (bundle.getHeaders().get(Constants.DELEGATION_ANNOTATIONS) == null) {
+        if (bundle.getHeaders().get(Constants.DELEGATION_ANNOTATIONS_HEADER) == null) {
             return;
         }
         Set<String> discoverClasses = getAllClassesInBundle();
@@ -152,10 +152,10 @@ public class BundleHandler {
         Enumeration<String> keys = bundle.getHeaders().keys();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
-            if (!key.startsWith(Constants.PROVIDED_CLASSES + "-")) {
+            if (!key.startsWith(Constants.PROVIDED_CLASSES_HEADER + "-")) {
                 continue;
             }
-            String context = key.replaceFirst(Constants.PROVIDED_CLASSES + "\\-", "");
+            String context = key.replaceFirst(Constants.PROVIDED_CLASSES_HEADER + "\\-", "");
             String providedClassesString = (String) bundle.getHeaders().get(key);
             Collection<String> providedClasses = parseProvidedClasses(providedClassesString);
             Set<String> matchingClasses = getMatchingClasses(providedClasses);
@@ -164,7 +164,7 @@ public class BundleHandler {
     }
 
     private void analyzePlainProvidesHeader() {
-        String providedClassesString = (String) bundle.getHeaders().get(Constants.PROVIDED_CLASSES);
+        String providedClassesString = (String) bundle.getHeaders().get(Constants.PROVIDED_CLASSES_HEADER);
         if (providedClassesString == null || providedClassesString.isEmpty()) {
             return;
         }
@@ -178,10 +178,10 @@ public class BundleHandler {
         Enumeration<String> keys = bundle.getHeaders().keys();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
-            if (!key.startsWith(Constants.PROVIDED_RESOURCES + "-")) {
+            if (!key.startsWith(Constants.PROVIDED_RESOURCES_HEADER + "-")) {
                 continue;
             }
-            String context = key.replaceFirst(Constants.PROVIDED_RESOURCES + "\\-", "");
+            String context = key.replaceFirst(Constants.PROVIDED_RESOURCES_HEADER + "\\-", "");
             String providedResourcesString = (String) bundle.getHeaders().get(key);
             addAllResourcesToContext(providedResourcesString, context);
         }
@@ -194,7 +194,7 @@ public class BundleHandler {
     }
 
     private void checkResourcesHeader() {
-        String providedResourcesString = (String) bundle.getHeaders().get(Constants.PROVIDED_RESOURCES);
+        String providedResourcesString = (String) bundle.getHeaders().get(Constants.PROVIDED_RESOURCES_HEADER);
         if (providedResourcesString == null || providedResourcesString.isEmpty()) {
             return;
         }
@@ -237,7 +237,7 @@ public class BundleHandler {
         ClassProvider service = new ClassProviderImpl(b, classes);
         Hashtable<String, Object> properties = new Hashtable<String, Object>();
         properties.put(Constants.PROVIDED_CLASSES_KEY, classes);
-        properties.put(Constants.CLASS_VERSION, b.getVersion().toString());
+        properties.put(Constants.CLASS_VERSION_KEY, b.getVersion().toString());
         b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
         return service;
     }
@@ -252,7 +252,7 @@ public class BundleHandler {
         Set<String> allnames = new HashSet<String>(classes);
         allnames.addAll(aliases.keySet());
         properties.put(Constants.PROVIDED_CLASSES_KEY, allnames);
-        properties.put(Constants.CLASS_VERSION, b.getVersion().toString());
+        properties.put(Constants.CLASS_VERSION_KEY, b.getVersion().toString());
         b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
         return service;
     }
@@ -262,8 +262,8 @@ public class BundleHandler {
         ClassProvider service = new ClassProviderImpl(b, classes);
         Hashtable<String, Object> properties = new Hashtable<String, Object>();
         properties.put(Constants.PROVIDED_CLASSES_KEY, classes);
-        properties.put(Constants.CLASS_VERSION, b.getVersion().toString());
-        properties.put(Constants.DELEGATION_CONTEXT, delegationContext);
+        properties.put(Constants.CLASS_VERSION_KEY, b.getVersion().toString());
+        properties.put(Constants.DELEGATION_CONTEXT_KEY, delegationContext);
         b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
         return service;
     }
@@ -278,8 +278,8 @@ public class BundleHandler {
         Set<String> allnames = new HashSet<String>(classes);
         allnames.addAll(aliases.keySet());
         properties.put(Constants.PROVIDED_CLASSES_KEY, allnames);
-        properties.put(Constants.CLASS_VERSION, b.getVersion().toString());
-        properties.put(Constants.DELEGATION_CONTEXT, delegationContext);
+        properties.put(Constants.CLASS_VERSION_KEY, b.getVersion().toString());
+        properties.put(Constants.DELEGATION_CONTEXT_KEY, delegationContext);
         b.getBundleContext().registerService(ClassProvider.class.getName(), service, properties);
         return service;
     }
@@ -288,7 +288,7 @@ public class BundleHandler {
         ResourceProvider service = new ResourceProviderImpl(bundle, matchingResources);
         Dictionary<String, Object> properties = new Hashtable<String, Object>();
         properties.put(Constants.PROVIDED_RESOURCES_KEY, matchingResources);
-        properties.put(Constants.CLASS_VERSION, bundle.getVersion().toString());
+        properties.put(Constants.CLASS_VERSION_KEY, bundle.getVersion().toString());
         bundle.getBundleContext().registerService(ResourceProvider.class.getName(), service, properties);
     }
 
@@ -297,8 +297,8 @@ public class BundleHandler {
         ResourceProvider service = new ResourceProviderImpl(bundle, matchingResources);
         Dictionary<String, Object> properties = new Hashtable<String, Object>();
         properties.put(Constants.PROVIDED_RESOURCES_KEY, matchingResources);
-        properties.put(Constants.CLASS_VERSION, bundle.getVersion().toString());
-        properties.put(Constants.DELEGATION_CONTEXT, delegationContext);
+        properties.put(Constants.CLASS_VERSION_KEY, bundle.getVersion().toString());
+        properties.put(Constants.DELEGATION_CONTEXT_KEY, delegationContext);
         bundle.getBundleContext().registerService(ResourceProvider.class.getName(), service, properties);
     }
 

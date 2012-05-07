@@ -102,7 +102,7 @@ public final class DelegationUtil {
     public static Filter createClassProviderFilter(String context, String classname) {
         String filterString = String.format("(&(%s=%s)(%s=%s)(%s=%s))",
             org.osgi.framework.Constants.OBJECTCLASS, ClassProvider.class.getName(),
-            Constants.DELEGATION_CONTEXT, context,
+            Constants.DELEGATION_CONTEXT_KEY, context,
             Constants.PROVIDED_CLASSES_KEY, classname);
         try {
             return FrameworkUtil.createFilter(filterString);
@@ -138,9 +138,9 @@ public final class DelegationUtil {
     public static Filter createClassProviderFilter(String context, String classname, Version version) {
         String filterString = String.format("(&(%s=%s)(%s=%s)(%s=%s)(%s=%s))",
             org.osgi.framework.Constants.OBJECTCLASS, ClassProvider.class.getName(),
-            Constants.DELEGATION_CONTEXT, context,
+            Constants.DELEGATION_CONTEXT_KEY, context,
             Constants.PROVIDED_CLASSES_KEY, classname,
-            Constants.CLASS_VERSION, version);
+            Constants.CLASS_VERSION_KEY, version);
         try {
             return FrameworkUtil.createFilter(filterString);
         } catch (InvalidSyntaxException e) {
@@ -158,7 +158,7 @@ public final class DelegationUtil {
         String filterString = String.format("(&(%s=%s)(%s=%s)(%s=%s))",
             org.osgi.framework.Constants.OBJECTCLASS, ClassProvider.class.getName(),
             Constants.PROVIDED_CLASSES_KEY, classname,
-            Constants.CLASS_VERSION, version.toString());
+            Constants.CLASS_VERSION_KEY, version.toString());
         try {
             return FrameworkUtil.createFilter(filterString);
         } catch (InvalidSyntaxException e) {

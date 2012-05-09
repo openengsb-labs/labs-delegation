@@ -383,6 +383,10 @@ public class BundleHandler {
         @SuppressWarnings("unchecked")
         Enumeration<URL> classEntries = bundle.findEntries("/", "*.class", true);
         Set<String> discoveredClasses = new HashSet<String>();
+        if(classEntries == null) {
+            LOGGER.info("bundle {} doesn't contain class files", bundle);
+            return discoveredClasses;
+        }
         while (classEntries.hasMoreElements()) {
             URL classURL = classEntries.nextElement();
             String className = extractClassName(classURL);

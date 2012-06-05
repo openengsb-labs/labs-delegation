@@ -20,6 +20,7 @@ package org.openengsb.labs.delegation.itests;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -48,6 +49,7 @@ import org.openengsb.labs.delegation.itests.bundles.provider.TestBean;
 import org.openengsb.labs.delegation.itests.bundles.provider.TestService;
 import org.openengsb.labs.delegation.itests.bundles.provider.internal.TestProvider;
 import org.openengsb.labs.delegation.service.ClassProvider;
+import org.openengsb.labs.delegation.service.DelegatedClassLoadingHelper;
 import org.openengsb.labs.delegation.service.DelegationUtil;
 import org.openengsb.labs.delegation.service.ResourceProvider;
 import org.ops4j.pax.exam.Option;
@@ -128,7 +130,7 @@ public class DelegationTest {
             TestBean.class.getName());
         Bundle providerBundle =
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
-        providerBundle.start();
+        providerBundle.start(); 
         ClassProvider provider = getOsgiService(ClassProvider.class);
         provider.loadClass(TestBean.class.getName());
         try {
@@ -329,6 +331,46 @@ public class DelegationTest {
             getOsgiService(ClassProvider.class, String.format("(%s=%s)",
                 org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_KEY, "mtestbean"));
         provider.loadClass(TestBean.class.getName());
+    }
+    
+    @Test
+    public void loadProvidedClass_shouldBeAbleToLoadClass() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_HEADER,
+            TestBean.class.getName());
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+        DelegatedClassLoadingHelper helper = new DelegatedClassLoadingHelper(bundleContext);
+        Class<?> result = helper.loadClass(TestBean.class.getName());
+        assertThat(result, notNullValue());
+    }
+    
+    @Test
+    public void loadProvidedClassWithContext_shouldBeAbleToLoadClass() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_HEADER + "-foo",
+            TestBean.class.getName());
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+        DelegatedClassLoadingHelper helper = new DelegatedClassLoadingHelper(bundleContext);
+        Class<?> result = helper.loadClassInContext(TestBean.class.getName(), "foo");
+        assertThat(result, notNullValue());
+    }
+    
+    @Test
+    public void loadProvidedClassWithContextAndVersion_shouldBeAbleToLoadClass() throws Exception {
+        TinyBundle providerTinyBundle = createProviderBundle();
+        providerTinyBundle.set(org.openengsb.labs.delegation.service.Constants.PROVIDED_CLASSES_HEADER + "-foo",
+            TestBean.class.getName());
+        providerTinyBundle.set(Constants.BUNDLE_VERSION, "1.0.1");
+        Bundle providerBundle =
+            bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
+        providerBundle.start();
+        DelegatedClassLoadingHelper helper = new DelegatedClassLoadingHelper(bundleContext);
+        Class<?> result = helper.loadClass(TestBean.class.getName(), "foo", "1.0.1");
+        assertThat(result, notNullValue());
     }
 
     private TinyBundle createProviderBundle() {

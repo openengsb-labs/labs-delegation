@@ -355,7 +355,7 @@ public class DelegationTest {
             bundleContext.installBundle("test://testlocation/test.provider.jar", providerTinyBundle.build());
         providerBundle.start();
         DelegatedClassLoadingHelper helper = new DelegatedClassLoadingHelper(bundleContext);
-        Class<?> result = helper.loadClassWithContext(TestBean.class.getName(), "foo");
+        Class<?> result = helper.loadClassInContext(TestBean.class.getName(), "foo");
         assertThat(result, notNullValue());
     }
     

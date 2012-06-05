@@ -47,7 +47,7 @@ public class DelegatedClassLoadingHelper {
      * Searches the OSGi environment for bundles which provide a class with the given name and the given context through
      * the labs delegation project. If there is such a bundle, the class object will be returned.
      */
-    public Class<?> loadClassWithContext(String name, String context) throws ClassNotFoundException {
+    public Class<?> loadClassInContext(String name, String context) throws ClassNotFoundException {
         return loadClass(name, context, null);
     }
 

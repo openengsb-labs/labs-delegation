@@ -3,9 +3,7 @@ labs-delegation
 
 The purpose of this library is to work around some downsides of using DynamicImport-Package by providing an alternate way to dynamically retrieve classes from other bundles at runtime.
 
-For more details have a look at the github-page:
-
-https://github.com/openengsb/labs-delegation/wiki
+[![Build Status](https://travis-ci.org/openengsb-labs/labs-delegation.png?branch=master)](https://travis-ci.org/openengsb-labs/labs-delegation)
 
 How to build
 ==========================

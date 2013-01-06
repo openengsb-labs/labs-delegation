@@ -8,7 +8,7 @@ notifications:
 
 env:
     global:
-        - SONATYPE_USERNAME=USER
+        - SONATYPE_USERNAME=pieber
         - secure: "cPX3NAFe648EnHVvyT9Qr6dsXPrIBW+89+5hXs9MJQ5kOMtI0ETuQxVozvdW\n4KCe8hn7RdfgNUDYEdEyBt1sB4kObamK12D6Na9SbKqBfg8I5vIt5jNAVybN\ndZpmf9Ltj88itwfCvN5Bj0xUwMwV+DCjOq7EZtrl6mshSnBziHA="
 
 after_success:

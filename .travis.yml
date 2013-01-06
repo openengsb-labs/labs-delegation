@@ -13,4 +13,5 @@ env:
 
 after_success:
   - python etc/travis/addServer.py
+  - chmod -R 777 etc/travis/deploy
   - etc/travis/deploy

@@ -6,5 +6,5 @@ if [[ "$TRAVIS" == "true" ]]; then
     echo "This is a pull request. No deployment will be done."
     exit 0
   fi
-  exit mvn clean deploy --settings ~/.m2/mySettings.xml 
+  exit `mvn clean deploy --settings ~/.m2/mySettings.xml`
 fi

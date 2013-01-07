@@ -1,4 +1,4 @@
-labs-delegation
+OSGi Delegation Support
 ==========================
 
 The purpose of this library is to work around some downsides of using DynamicImport-Package by providing an alternate way to dynamically retrieve classes from other bundles at runtime.

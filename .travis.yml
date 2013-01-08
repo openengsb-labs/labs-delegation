@@ -12,6 +12,8 @@ env:
         - secure: "cPX3NAFe648EnHVvyT9Qr6dsXPrIBW+89+5hXs9MJQ5kOMtI0ETuQxVozvdW\n4KCe8hn7RdfgNUDYEdEyBt1sB4kObamK12D6Na9SbKqBfg8I5vIt5jNAVybN\ndZpmf9Ltj88itwfCvN5Bj0xUwMwV+DCjOq7EZtrl6mshSnBziHA="
 
 after_success:
-  - python etc/travis/addServer.py
-  - chmod -R 777 etc/travis/deploy
-  - etc/travis/deploy
+  - wget https://raw.github.com/openengsb/openengsb-root/master/etc/travis/addServer.py
+  - wget https://raw.github.com/openengsb/openengsb-root/master/etc/travis/deploy
+  - python addServer.py
+  - chmod -R 777 deploy
+  - ./deploy
